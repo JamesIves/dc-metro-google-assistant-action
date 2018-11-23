@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import {dialogflow} from 'actions-on-google';
-import {fetchTrainTimetable} from './wamata';
+import {fetchTrainTimetable} from './wmata';
 
 const app = dialogflow({debug: true});
 
@@ -11,7 +11,7 @@ app.intent('Metro Timetable', async (conv, {station, transport}) => {
     if (!timetable) {
       conv.close('nothing found');
     } else {
-      conv.close('lots of shit found', JSON.stringify(timetable));
+      conv.close('lots of stuff found', JSON.stringify(timetable));
     }
 
   }
