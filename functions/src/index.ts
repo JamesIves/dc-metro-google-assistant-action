@@ -154,7 +154,6 @@ app.intent(
                 },
                 {
                   header: 'Destination',
-                  align: 'CENTER',
                 },
                 {
                   header: 'Arrival',
