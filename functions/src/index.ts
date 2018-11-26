@@ -104,71 +104,77 @@ app.intent(
     } else {
       const timetable: any = await fetchBusTimetable(station);
 
-      const timetableCells = timetable.Predictions.map((item) => {
-        return {
-          cells: [
-            item.RouteID || 'TBD',
-            item.DirectionText || 'TDB',
-            convertCode(item.Minutes.toString() || 'TBD', serviceCodesEnum),
-          ],
-        };
-      });
+      if (timetable.Predictions) {
+        const timetableCells = timetable.Predictions.map((item) => {
+          return {
+            cells: [
+              item.RouteID || 'TBD',
+              item.DirectionText || 'TDB',
+              convertCode(item.Minutes.toString() || 'TBD', serviceCodesEnum),
+            ],
+          };
+        });
 
-      if (!timetableCells.length) {
-        conv.ask(
-          'There are currently no buses scheduled to arrive at this stop.'
-        );
-      } else {
-        conv.ask(
-          new SimpleResponse({
-            speech: `The next bus arriving at this stop is bound for ${
-              timetable.Predictions[0].DirectionText
-            } ans is due to arrive in ${
-              timetable.Predictions[0].Minutes
-            } minutes.`,
-            text: `The next bus arriving at stop ${
-              timetable.StopName
-            } is bound for ${
-              timetable.Predictions[0].DirectionText
-            } ans is due to arrive in ${
-              timetable.Predictions[0].Minutes
-            } minutes.`,
-          })
-        );
-
-        // Makes sure the user has a screen output before sending it table data.
-        if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
+        if (!timetableCells.length) {
           conv.ask(
-            new Table({
-              title: timetable.StopName,
-              subtitle: new Date().toLocaleString(),
-              image: new Image({
-                url:
-                  'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
-                alt: 'DC Metro Logo',
-              }),
-              columns: [
-                {
-                  header: 'Route',
-                  align: 'LEADING',
-                },
-                {
-                  header: 'Destination',
-                },
-                {
-                  header: 'Arrival',
-                  align: 'TRAILING',
-                },
-              ],
-              rows: timetableCells,
-              buttons: new Button({
-                title: 'Issues and Feedback',
-                url:
-                  'https://github.com/JamesIves/dc-metro-google-action/issues',
-              }),
+            'There are currently no buses scheduled to arrive at this stop.'
+          );
+        } else {
+          conv.ask(
+            new SimpleResponse({
+              speech: `The next bus arriving at this stop is bound for ${
+                timetable.Predictions[0].DirectionText
+              } is due to arrive in ${
+                timetable.Predictions[0].Minutes
+              } minutes.`,
+              text: `The next bus arriving at stop ${
+                timetable.StopName
+              } is bound for ${
+                timetable.Predictions[0].DirectionText
+              } ans is due to arrive in ${
+                timetable.Predictions[0].Minutes
+              } minutes.`,
             })
           );
+
+          // Makes sure the user has a screen output before sending it table data.
+          if (
+            conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
+          ) {
+            conv.ask(
+              new Table({
+                title: timetable.StopName,
+                subtitle: new Date().toLocaleString(),
+                image: new Image({
+                  url:
+                    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
+                  alt: 'DC Metro Logo',
+                }),
+                columns: [
+                  {
+                    header: 'Route',
+                    align: 'LEADING',
+                  },
+                  {
+                    header: 'Destination',
+                  },
+                  {
+                    header: 'Arrival',
+                    align: 'TRAILING',
+                  },
+                ],
+                rows: timetableCells,
+                buttons: new Button({
+                  title: 'Issues and Feedback',
+                  url:
+                    'https://github.com/JamesIves/dc-metro-google-action/issues',
+                }),
+              })
+            );
+          }
         }
+      } else {
+        conv.ask('I could not locate a bus stop with that number.');
       }
     }
   }
