@@ -14,21 +14,29 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
     const stations = await stationResponse.json();
 
     /* The station code is required for the secondary call.
-      Filters down the list by the requested station. */
-    const stationCode = stations.Stations.filter((item) => {
-      return item.Name === station;
-    })[0].Code;
+      Fuzzy filters down the list by the requested station. */
+    const stationData = stations.Stations.filter((item) =>
+      item.Name.toLowerCase().includes(station.toLowerCase())
+    )[0];
 
     /* Runs the code through the prediction endpoint to get the updated
       train timetable for that station. */
     const predictionResponse = await fetch(
-      `${rootUrl}/StationPrediction.svc/json/GetPrediction/${stationCode}?api_key=${wmataApiKey}`,
+      `${rootUrl}/StationPrediction.svc/json/GetPrediction/${
+        stationData.Code
+      }?api_key=${wmataApiKey}`,
       {method: 'GET'}
     );
+
     const predictionObj = await predictionResponse.json();
-    return await predictionObj.Trains.filter(
+    const predictionData = await predictionObj.Trains.filter(
       (item) => item.Line !== 'None' || item.Line !== 'No'
     );
+
+    return {
+      stationName: stationData.Name,
+      predictions: predictionData,
+    };
   } catch (error) {
     return [];
   }

@@ -23,7 +23,7 @@ app.intent(
       const timetable: any = await fetchTrainTimetable(station);
 
       // Generates the neccersary table cells for display devices.
-      const timetableCells = timetable.map((item) => {
+      const timetableCells = timetable.predictions.map((item) => {
         return {
           cells: [
             lineNamesEnum[item.Line] || 'TBD',
@@ -41,23 +41,26 @@ app.intent(
       } else {
         conv.ask(
           new SimpleResponse({
-            speech: `The next train arriving at ${station} is a ${
-              lineNamesEnum[timetable[0].Line]
+            speech: `The next train arriving at ${timetable.stationName} is a ${
+              lineNamesEnum[timetable.predictions[0].Line]
             } line train and has a final calling point at ${
-              timetable[0].Destination
+              timetable.predictions[0].Destination
             }. ${
-              timetable[0].Min === 'ARR'
+              timetable.predictions[0].Min === 'ARR'
                 ? `It's arriving now.`
-                : timetable[0].Min === 'BRD'
+                : timetable.predictions[0].Min === 'BRD'
                 ? `It's boarding now.`
-                : `It arrives in ${timetable[0].Min} minutes.`
+                : `It arrives in ${timetable.predictions[0].Min} minutes.`
             }`,
-            text: `The next train arriving at ${station} has a final calling point at ${
-              timetable[0].Destination
+            text: `The next train arriving at ${
+              timetable.stationName
+            } has a final calling point at ${
+              timetable.predictions[0].Destination
             }. ${
-              timetable[0].Min === 'BRD' || timetable[0].Min === 'ARR'
+              timetable.predictions[0].Min === 'BRD' ||
+              timetable.predictions[0].Min === 'ARR'
                 ? `It's arriving now.`
-                : `It arrives in ${timetable[0].Min} minutes.`
+                : `It arrives in ${timetable.predictions[0].Min} minutes.`
             }`,
           })
         );
@@ -67,7 +70,7 @@ app.intent(
         if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
           conv.ask(
             new Table({
-              title: station,
+              title: timetable.stationName,
               subtitle: new Date().toLocaleString(),
               image: new Image({
                 url:
