@@ -1,3 +1,34 @@
+/**
+ * Accepts a code and a dictionary enum, and returns the match.
+ * @param {string} code - The code that should be matched.
+ * @param {object} dictionary - The enum that the code should be matched to.
+ * @returns {string} Returns the matching string.
+ */
+export function convertCode(code: string, dictionary: object) {
+  if (dictionary[code]) {
+    return dictionary[code];
+  } else {
+    return code;
+  }
+}
+
+/**
+ * Accepts a station name with acronymns, and then appends the full version to the string.
+ * This is done so a user can match on 'VT' and 'Virginia Tech' when requesting a station.
+ * @param {string} stationName - The name of the station.
+ * @returns {string} Returns a string with the appended full version of the acronymn, ie 'udc university of the district of columbia'.
+ */
+export function convertStationAcronym(stationName: string) {
+  return Object.keys(acronymEnum).reduce((previous, current) => {
+    if (stationName.toUpperCase().includes(current)) {
+      return stationName.concat(` ${acronymEnum[current]}`).toLowerCase();
+    } else {
+      return previous.toLowerCase();
+    }
+  }, '');
+}
+
+/** Enum containing all of the line names on the DC Metro. */
 export const lineNamesEnum = {
   RD: 'Red',
   BL: 'Blue',
@@ -7,15 +38,28 @@ export const lineNamesEnum = {
   GR: 'Green',
 };
 
+/** Enum containing all service codes on the DC metro. */
 export const serviceCodesEnum = {
   ARR: 'Arriving',
   BRD: 'Boarding',
 };
 
-export function convertCode(code, dictionary) {
-  if (dictionary[code]) {
-    return dictionary[code];
-  } else {
-    return code;
-  }
-}
+/** Enum containing all station acronymns and their matching string. */
+export const acronymEnum = {
+  MT: 'Mountain',
+  AMER: 'American',
+  PL: 'Place',
+  UDC: 'Univeristy of the District of Columbia',
+  AU: 'American University',
+  AVE: 'Avenue',
+  CUA: 'Catholic University of America',
+  NOMA: 'North of Massechusets Avenue',
+  GMU: 'George Mason University',
+  VT: 'Virginia Tech',
+  UVA: 'University of Virginia',
+  RAEGAN: 'DCA',
+  ST: 'Street',
+  SW: 'South West',
+  SQ: 'Square',
+  PENN: 'Pennsylvania',
+};

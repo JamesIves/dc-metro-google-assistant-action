@@ -11,6 +11,9 @@ import {fetchTrainTimetable, fetchBusTimetable} from './wmata';
 
 const app = dialogflow({debug: true});
 
+/**
+ * DiagFlow intent for the DC Metro timetable.
+ */
 app.intent(
   'metro_timetable',
   async (
@@ -57,9 +60,10 @@ app.intent(
             } has a final calling point at ${
               timetable.predictions[0].Destination
             }. ${
-              timetable.predictions[0].Min === 'BRD' ||
               timetable.predictions[0].Min === 'ARR'
                 ? `It's arriving now.`
+                : timetable.predictions[0].Min === 'BRD'
+                ? `It's boarding now.`
                 : `It arrives in ${timetable.predictions[0].Min} minutes.`
             }`,
           })
@@ -140,7 +144,7 @@ app.intent(
             })
           );
 
-          // Makes sure the user has a screen output before sending it table data.
+          /* Makes sure the user has a screen output before sending it table data. */
           if (
             conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
           ) {
