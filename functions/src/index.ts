@@ -25,87 +25,97 @@ app.intent(
     if (transportParam === 'train' || transportParam === 'rail') {
       const timetable: any = await fetchTrainTimetable(station);
 
-      // Generates the neccersary table cells for display devices.
-      const timetableCells = timetable.predictions.map((item) => {
-        return {
-          cells: [
-            lineNamesEnum[item.Line] || 'TBD',
-            item.Destination || 'TDB',
-            item.Car || 'TBD',
-            convertCode(item.Min || 'TBD', serviceCodesEnum),
-          ],
-        };
-      });
-
-      if (!timetableCells.length) {
+      if (!timetable) {
         conv.ask(
-          'There are no trains currently scheduled to stop at this station.'
+          'I was not able to find a station by that name. Please try making your request more specific and try again.'
         );
       } else {
-        conv.ask(
-          new SimpleResponse({
-            speech: `The next train arriving at ${timetable.stationName} is a ${
-              lineNamesEnum[timetable.predictions[0].Line]
-            } line train and has a final calling point at ${
-              timetable.predictions[0].Destination
-            }. ${
-              timetable.predictions[0].Min === 'ARR'
-                ? `It's arriving now.`
-                : timetable.predictions[0].Min === 'BRD'
-                ? `It's boarding now.`
-                : `It arrives in ${timetable.predictions[0].Min} minutes.`
-            }`,
-            text: `The next train arriving at ${
-              timetable.stationName
-            } has a final calling point at ${
-              timetable.predictions[0].Destination
-            }. ${
-              timetable.predictions[0].Min === 'ARR'
-                ? `It's arriving now.`
-                : timetable.predictions[0].Min === 'BRD'
-                ? `It's boarding now.`
-                : `It arrives in ${timetable.predictions[0].Min} minutes.`
-            }`,
-          })
-        );
+        // Generates the neccersary table cells for display devices.
+        const timetableCells = timetable.predictions.map((item) => {
+          return {
+            cells: [
+              lineNamesEnum[item.Line] || 'TBD',
+              item.Destination || 'TDB',
+              item.Car || 'TBD',
+              convertCode(item.Min || 'TBD', serviceCodesEnum),
+            ],
+          };
+        });
 
-        /* As this data can only be displayed on a screen, we check if the user actually has one
-          before the payload is sent. */
-        if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
+        if (!timetableCells.length) {
           conv.ask(
-            new Table({
-              title: timetable.stationName,
-              subtitle: new Date().toLocaleString(),
-              image: new Image({
-                url:
-                  'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
-                alt: 'DC Metro Logo',
-              }),
-              columns: [
-                {
-                  header: 'Line',
-                  align: 'LEADING',
-                },
-                {
-                  header: 'Destination',
-                  align: 'CENTER',
-                },
-                {
-                  header: 'Car',
-                },
-                {
-                  header: 'Arrival',
-                  align: 'TRAILING',
-                },
-              ],
-              rows: timetableCells,
-              buttons: new Button({
-                title: 'Issues and Feedback',
-                url:
-                  'https://github.com/JamesIves/dc-metro-google-action/issues',
-              }),
+            'There are no trains currently scheduled to stop at this station.'
+          );
+        } else {
+          conv.ask(
+            new SimpleResponse({
+              speech: `The next train arriving at ${
+                timetable.stationName
+              } is a ${
+                lineNamesEnum[timetable.predictions[0].Line]
+              } line train and has a final calling point at ${
+                timetable.predictions[0].Destination
+              }. ${
+                timetable.predictions[0].Min === 'ARR'
+                  ? `It's arriving now.`
+                  : timetable.predictions[0].Min === 'BRD'
+                  ? `It's boarding now.`
+                  : `It arrives in ${timetable.predictions[0].Min} minutes.`
+              }`,
+              text: `The next train arriving at ${
+                timetable.stationName
+              } has a final calling point at ${
+                timetable.predictions[0].Destination
+              }. ${
+                timetable.predictions[0].Min === 'ARR'
+                  ? `It's arriving now.`
+                  : timetable.predictions[0].Min === 'BRD'
+                  ? `It's boarding now.`
+                  : `It arrives in ${timetable.predictions[0].Min} minutes.`
+              }`,
             })
           );
+
+          /* As this data can only be displayed on a screen, we check if the user actually has one
+          before the payload is sent. */
+          if (
+            conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
+          ) {
+            conv.ask(
+              new Table({
+                title: timetable.stationName,
+                subtitle: new Date().toLocaleString(),
+                image: new Image({
+                  url:
+                    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
+                  alt: 'DC Metro Logo',
+                }),
+                columns: [
+                  {
+                    header: 'Line',
+                    align: 'LEADING',
+                  },
+                  {
+                    header: 'Destination',
+                    align: 'CENTER',
+                  },
+                  {
+                    header: 'Car',
+                  },
+                  {
+                    header: 'Arrival',
+                    align: 'TRAILING',
+                  },
+                ],
+                rows: timetableCells,
+                buttons: new Button({
+                  title: 'Issues and Feedback',
+                  url:
+                    'https://github.com/JamesIves/dc-metro-google-action/issues',
+                }),
+              })
+            );
+          }
         }
       }
     } else {

@@ -1,33 +1,3 @@
-/**
- * Accepts a code and a dictionary enum, and returns the match.
- * @param {string} code - The code that should be matched.
- * @param {object} dictionary - The enum that the code should be matched to.
- * @returns {string} Returns the matching string.
- */
-export function convertCode(code: string, dictionary: object) {
-  if (dictionary[code]) {
-    return dictionary[code];
-  } else {
-    return code;
-  }
-}
-
-/**
- * Accepts a station name with acronymns, and then appends the full version to the string.
- * This is done so a user can match on 'VT' and 'Virginia Tech' when requesting a station.
- * @param {string} stationName - The name of the station.
- * @returns {string} Returns a string with the appended full version of the acronymn, ie 'udc university of the district of columbia'.
- */
-export function convertStationAcronym(stationName: string) {
-  return Object.keys(acronymEnum).reduce((previous, current) => {
-    if (stationName.toUpperCase().includes(current)) {
-      return stationName.concat(` ${acronymEnum[current]}`).toLowerCase();
-    } else {
-      return previous.toLowerCase();
-    }
-  }, '');
-}
-
 /** Enum containing all of the line names on the DC Metro. */
 export const lineNamesEnum = {
   RD: 'Red',
@@ -63,3 +33,34 @@ export const acronymEnum = {
   SQ: 'Square',
   PENN: 'Pennsylvania',
 };
+
+/**
+ * Accepts a code and a dictionary enum, and returns the match.
+ * @param {string} code - The code that should be matched.
+ * @param {object} dictionary - The enum that the code should be matched to.
+ * @returns {string} Returns the matching string.
+ */
+export function convertCode(code: string, dictionary: object) {
+  if (dictionary[code]) {
+    return dictionary[code];
+  } else {
+    return code;
+  }
+}
+
+/**
+ * Accepts a station name with acronymns, and then appends the full version to the string.
+ * This is done so a user can match on 'VT' and 'Virginia Tech' when requesting a station.
+ * @param {string} stationName - The name of the station.
+ * @returns {string} Returns a string with the appended full version of the acronymn, ie 'udc university of the district of columbia'.
+ */
+export function convertStationAcronym(stationName) {
+  const name = stationName.replace(/[^a-zA-Z ]/g, ' ');
+  const stationNameArray = name.split(' ');
+  let result = stationNameArray.map((item) => {
+    return acronymEnum[item.toUpperCase()]
+      ? acronymEnum[item.toUpperCase()]
+      : item;
+  });
+  return result.join(' ').toLowerCase();
+}

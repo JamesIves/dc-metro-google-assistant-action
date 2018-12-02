@@ -18,30 +18,49 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
     );
     const stations = await stationResponse.json();
 
-    /* The station code is required for the secondary call.
-      All station name acronyms get converted, and then we fuzzy match using an array filter to get the requested data. */
-    const stationData = stations.Stations.filter((item) =>
-      convertStationAcronym(item.Name).includes(station.toLowerCase())
-    )[0];
+    /* The station code is required for the secondary API call. First we check to see if we can find
+      an exact match on the station name with an array find. If not the net is set wider and a fuzzy match filter
+      is performed. */
+    let stationName = station.toLowerCase();
+    let stationData =
+      stations.Stations.find((item) =>
+        item.Name.toLowerCase().includes(stationName)
+      ) || null;
 
-    const predictionResponse = await fetch(
-      `${rootUrl}/StationPrediction.svc/json/GetPrediction/${
-        stationData.Code
-      }?api_key=${wmataApiKey}`,
-      {method: 'GET'}
-    );
+    if (!stationData) {
+      stationName = convertStationAcronym(station).toLowerCase();
+      stationData =
+        stations.Stations.filter((item) =>
+          stationName.split(' ').every((word) =>
+            convertStationAcronym(item.Name)
+              .toLowerCase()
+              .includes(word)
+          )
+        )[0] || null;
+    }
 
-    /* Inbound trains which do not accept passengers are listed as 'No' and 'None' in the WMATA API.
-      Because this isn't helpful data to the user we filter these results out of the return. */
-    const predictionObj = await predictionResponse.json();
-    const predictionData = await predictionObj.Trains.filter(
-      (item) => item.Line !== 'None' || item.Line !== 'No'
-    );
+    if (stationData) {
+      const predictionResponse = await fetch(
+        `${rootUrl}/StationPrediction.svc/json/GetPrediction/${
+          stationData.Code
+        }?api_key=${wmataApiKey}`,
+        {method: 'GET'}
+      );
 
-    return {
-      stationName: stationData.Name,
-      predictions: predictionData,
-    };
+      /* Inbound trains which do not accept passengers are listed as 'No' and 'None' in the WMATA API.
+        Because this isn't helpful data to the user we filter these results out of the return. */
+      const predictionObj = await predictionResponse.json();
+      const predictionData = await predictionObj.Trains.filter(
+        (item) => item.Line !== 'None' || item.Line !== 'No'
+      );
+
+      return {
+        stationName: stationData.Name,
+        predictions: predictionData,
+      };
+    } else {
+      return null;
+    }
   } catch (error) {
     return [];
   }
