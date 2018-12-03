@@ -71,10 +71,10 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
  * @param {string} station - The bus stop id.
  * @returns {Promise} Returns a promise.
  */
-export const fetchBusTimetable = async (station: string): Promise<object> => {
+export const fetchBusTimetable = async (stop: string): Promise<object> => {
   try {
     /* The stop ID  must be numeric, therefore the data gets sanitized incase DialogFlow muddles the data somehow. */
-    const sanitizedStopId = station.replace(/\D/g, '');
+    const sanitizedStopId = stop.replace(/\D/g, '');
     const predictionResponse = await fetch(
       `${rootUrl}/NextBusService.svc/json/jPredictions?StopID=${sanitizedStopId}&api_key=${wmataApiKey}`,
       {method: 'GET'}
