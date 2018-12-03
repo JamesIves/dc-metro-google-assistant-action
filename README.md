@@ -1,18 +1,20 @@
 # DC Metro Google Action 🚉 🔉
-This is a custom action for the Google Assistant which will tell you the current rail and bus predictions for the DC Metro transit system. These actions can be invoked on anything that supports Google Assistant such as the app, the Google Home product suite, Android phones, and more. 
+This is a custom action for the Google Assistant which will tell you the current rail and bus predictions for the DC Metro transit system. These actions can be invoked on anything that supports Google Assistant such as a phone, a Google Home device, and the app.
 
-## Interactions 💬
-You're able to invoke the DC Metro assistant by saying `Hey Google, talk to D.C. Metro` to Google Assistant on your device. From there you can ask it some questions:
-
-`Hey Google, when will the next Train arrive at Farragut Square` 📢
-
-`Hey Google, when will the D9 Bus arrive at Farragut Square` 📢
-
-`Hey Google, Train timetable for Farragut Square North` 📢
-
-![Interactions](https://developers.google.com/actions/images/response-branching.svg)
+## Installation Steps 💽
+This application can be installed with Yarn by running `yarn install` from within the [functions](/functions) directory. With the dependencies installed you can deploy compile and lint the codebase using the `tsc` command.
 
 ---
 
-## Installation Steps 💽
-If you're a developer and you'd like to run the application locally...
+### Deploying
+This project can be deployed to firebase using the `firebase deploy -only functions` command. If you'd like to import the project directly into Google Home you can use follow the steps below.
+
+...
+
+
+## Interactions 💬
+You're able to invoke the application using Google Assistant by saying `Hey Google, talk to DC Metro`. Once the connection has been established you're able to ask it a series of questions.
+
+Table?
+
+---
