@@ -15,6 +15,7 @@ This project can be deployed to firebase using the `firebase deploy -only functi
 ## Interactions 💬
 You're able to invoke the application using Google Assistant by saying `Hey Google, talk to DC Metro`. Once the connection has been established you're able to ask it a series of questions.
 
-Table?
 
----
+| Action | Description |
+| ------------- | ------------- |
+| Train Timetable  | You can ask the action for a rail or train timetable at a specific station. For instance you can say `Rail timetable for Farragut North` or `Train timetable for U Street`. Stations with acronyms in their name will also work, for example `Train timetable for George Mason University`. 
