@@ -28,8 +28,8 @@ You're able to invoke the action using Google Assistant by saying `Hey Google, t
 | Action | Description |
 | ------------- | ------------- |
 | `Ok Google, Ask DC Metro for the Train timetable for Farragut North`  | You can ask the action for a rail or train timetable at a specific station. For instance you can say `Rail timetable for Farragut North` or `Train timetable for U Street`. Stations with acronyms in their name will also work, for example `Train timetable for George Mason University` will produce results even though the station name is GMU. |
-| `Ask DC Metro for the Bus timetable for stop 3004076`  | You can ask the action for a bus stop timetable for a specific stop id. For instance you can say `Bus timetable for stop 123`. You can find the stop id on the sign that the bus stops at. |
-| `Commands`  | You can ask the action for a list of available commands by saying either `train commands` or `bus commands`.  |
+| `Ok Google, Ask DC Metro for the Bus timetable for stop 3004076`  | You can ask the action for a bus stop timetable for a specific stop id. For instance you can say `Bus timetable for stop 123`. You can find the stop id on the sign that the bus stops at. |
+| `Ok Google, Ask DC Metro for Train Commands`  | You can ask the action for a list of available commands by saying either `train commands` or `bus commands`.  |
 
 If you have a screen the action will send a detailed timetable to your device.
 
