@@ -1,9 +1,13 @@
 {
   "name": "dc-metro-google-assistant",
-  "description": "",
+  "description": "DC Metro Google Assistant action that will show you the latest train and bus arrival information for your commute.",
   "version": "0.0.1",
   "author": "James Ives",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesIves/dc-metro-google-assistant-action.git"
+  },
   "scripts": {
     "lint": "tslint -p tsconfig.json src/**/*.ts -e tests/**/*.ts",
     "build": "tsc",
@@ -15,7 +19,6 @@
     "test": "tape -r ts-node/register src/tests/*.spec.ts",
     "format": "prettier --write './src/**/*.ts'"
   },
-  "main": "lib/index.js",
   "dependencies": {
     "actions-on-google": "^2.5.0",
     "firebase-admin": "^6.3.0",
@@ -30,5 +33,15 @@
     "tslint": "~5.8.0",
     "typescript": "~2.8.3"
   },
-  "private": true
+  "private": true,
+  "keywords": [
+    "washington-dc",
+    "metro",
+    "civic",
+    "google-assistant"
+  ],
+  "bugs": {
+    "url": "https://github.com/JamesIves/dc-metro-google-assistant-action/issues"
+  },
+  "homepage": "https://jamesiv.es"
 }
