@@ -1,7 +1,7 @@
 {
   "name": "dc-metro-google-assistant-action",
   "description": "",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "James Ives",
   "license": "MIT",
   "scripts": {
