@@ -62,8 +62,9 @@ app.intent(
                   ? `It's boarding now.`
                   : `It arrives in ${timetable.predictions[0].Min} minutes.`
               }`,
-              text: `The next train arriving at ${
-                timetable.stationName
+              text: `The next train arriving at ${timetable.stationName} is a ${
+                lineNamesEnum[timetable.predictions[0].Line]
+              } line train and 
               } has a final calling point at ${
                 timetable.predictions[0].Destination
               }. ${
@@ -75,6 +76,38 @@ app.intent(
               }`,
             })
           );
+
+          if (
+            !conv.surface.capabilities.has(
+              'actions.capability.SCREEN_OUTPUT'
+            ) &&
+            timetableCells.length >= 2
+          ) {
+            new SimpleResponse({
+              speech: `The train after that is a ${
+                lineNamesEnum[timetable.predictions[1].Line]
+              } line train and has a final calling point at ${
+                timetable.predictions[1].Destination
+              }. ${
+                timetable.predictions[1].Min === 'ARR'
+                  ? `It's arriving now.`
+                  : timetable.predictions[1].Min === 'BRD'
+                  ? `It's boarding now.`
+                  : `It arrives in ${timetable.predictions[1].Min} minutes.`
+              }`,
+              text: `The train after that is a ${
+                lineNamesEnum[timetable.predictions[1].Line]
+              } line train and has a final calling point at ${
+                timetable.predictions[1].Destination
+              }. ${
+                timetable.predictions[1].Min === 'ARR'
+                  ? `It's arriving now.`
+                  : timetable.predictions[1].Min === 'BRD'
+                  ? `It's boarding now.`
+                  : `It arrives in ${timetable.predictions[1].Min} minutes.`
+              }`,
+            });
+          }
 
           /* As this data can only be displayed on a screen, we check if the user actually has one
           before the payload is sent. */
@@ -154,45 +187,85 @@ app.intent(
             })
           );
 
-          /* Makes sure the user has a screen output before sending it table data. */
           if (
-            conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
+            !conv.surface.capabilities.has(
+              'actions.capability.SCREEN_OUTPUT'
+            ) &&
+            timetableCells.length >= 2
           ) {
             conv.ask(
-              new Table({
-                title: timetable.StopName,
-                subtitle: new Date().toLocaleString(),
-                image: new Image({
-                  url:
-                    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
-                  alt: 'DC Metro Logo',
-                }),
-                columns: [
-                  {
-                    header: 'Route',
-                    align: 'LEADING',
-                  },
-                  {
-                    header: 'Destination',
-                  },
-                  {
-                    header: 'Arrival',
-                    align: 'TRAILING',
-                  },
-                ],
-                rows: timetableCells,
-                buttons: new Button({
-                  title: 'Issues and Feedback',
-                  url:
-                    'https://github.com/JamesIves/dc-metro-google-action/issues',
-                }),
+              new SimpleResponse({
+                speech: `The bus after that is bound for ${
+                  timetable.Predictions[1].DirectionText
+                } and is due to arrive in ${
+                  timetable.Predictions[1].Minutes
+                } minutes.`,
+                text: `The bus after that is bound for ${
+                  timetable.Predictions[1].DirectionText
+                } and is due to arrive in ${
+                  timetable.Predictions[1].Minutes
+                } minutes.`,
               })
             );
+
+            /* Makes sure the user has a screen output before sending it table data. */
+            if (
+              conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
+            ) {
+              conv.ask(
+                new Table({
+                  title: timetable.StopName,
+                  subtitle: new Date().toLocaleString(),
+                  image: new Image({
+                    url:
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
+                    alt: 'DC Metro Logo',
+                  }),
+                  columns: [
+                    {
+                      header: 'Route',
+                      align: 'LEADING',
+                    },
+                    {
+                      header: 'Destination',
+                    },
+                    {
+                      header: 'Arrival',
+                      align: 'TRAILING',
+                    },
+                  ],
+                  rows: timetableCells,
+                  buttons: new Button({
+                    title: 'Issues and Feedback',
+                    url:
+                      'https://github.com/JamesIves/dc-metro-google-action/issues',
+                  }),
+                })
+              );
+            }
           }
         }
       } else {
         conv.ask('I could not locate a bus stop with that number.');
       }
+    }
+  }
+);
+
+app.intent(
+  'command_intent',
+  async (
+    conv: any,
+    {transport, station}: {transport: string, station: string}
+  ) => {
+    const transportParam = transport.toLowerCase();
+
+    if (transport === 'train' || transport === 'rail') {
+      conv.ask(`To get the next arrival a Metro station you can say things such as 'Train timetable for Farragut North' or 'Rail timetable for Smithsonian'.
+      If you have a screen I'll send you the most up to date information available to your device.`);
+    } else {
+      conv.ask(`To find out when the bus comes along you can say 'Bus timetable for 123', replacing the 123 with the stop ID found on the Metro bus stop sign.
+      If you have a screen I'll send you the most up to date information available to your device.`);
     }
   }
 );

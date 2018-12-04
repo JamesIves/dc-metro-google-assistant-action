@@ -16,7 +16,7 @@ export const serviceCodesEnum = {
 
 /** Enum containing all station acronymns and their matching string. */
 export const acronymEnum = {
-  MT: 'Mountain',
+  MT: 'Mount',
   AMER: 'American',
   PL: 'Place',
   UDC: 'Univeristy of the District of Columbia',
@@ -27,7 +27,7 @@ export const acronymEnum = {
   GMU: 'George Mason University',
   VT: 'Virginia Tech',
   UVA: 'University of Virginia',
-  RAEGAN: 'DCA',
+  DCA: 'Ronald Reagan',
   ST: 'Street',
   SW: 'South West',
   SQ: 'Square',

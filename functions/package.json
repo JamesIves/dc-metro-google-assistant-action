@@ -4,22 +4,27 @@
   "author": "James Ives",
   "license": "MIT",
   "scripts": {
-    "lint": "tslint --project tsconfig.json",
+    "lint": "tslint -p tsconfig.json src/**/*.ts -e tests/**/*.ts",
     "build": "tsc",
     "serve": "npm run build && firebase serve --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "test": "tape -r ts-node/register src/tests/*.spec.ts",
+    "format": "prettier --write './src/**/*.ts'"
   },
   "main": "lib/index.js",
   "dependencies": {
     "actions-on-google": "^2.5.0",
-    "firebase-admin": "~6.0.0",
     "firebase-functions": "^2.1.0",
-    "node-fetch": "^2.3.0"
+    "node-fetch": "^2.3.0",
+    "prettier": "*"
   },
   "devDependencies": {
+    "@types/tape": "^4.2.32",
+    "tape": "^4.6.2",
+    "ts-node": "7.0.1",
     "tslint": "~5.8.0",
     "typescript": "~2.8.3"
   },
