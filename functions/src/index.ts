@@ -84,7 +84,7 @@ app.intent(
             conv.ask(
               new Table({
                 title: timetable.stationName,
-                subtitle: new Date().toLocaleString(),
+                subtitle: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }),
                 image: new Image({
                   url:
                     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
@@ -197,7 +197,7 @@ app.intent(
             conv.ask(
               new Table({
                 title: timetable.StopName,
-                subtitle: new Date().toLocaleString(),
+                subtitle: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }),
                 image: new Image({
                   url:
                     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
