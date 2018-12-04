@@ -22,7 +22,7 @@ app.intent(
   ) => {
     const transportParam = transport.toLowerCase();
 
-    if (transportParam === 'train' || transportParam === 'rail') {
+    if (transportParam === 'train' || transportParam === 'rail' || transportParam === 'metro') {
       const timetable: any = await fetchTrainTimetable(station);
 
       if (!timetable) {
@@ -254,7 +254,7 @@ app.intent(
         }
       } else {
         conv.close(
-          'I could not find a bus stop with that id. Please double checkthe number and try again, the stop id is located on the sign that the bus stops at.'
+          'I could not find a bus stop with that id. Please double check the number and try again, the stop id is located on the sign that the bus stops at.'
         );
       }
     } else {
@@ -271,13 +271,13 @@ app.intent(
   async (conv: any, {transport}: {transport: string}) => {
     const transportParam = transport.toLowerCase();
 
-    if (transportParam === 'train' || transportParam === 'rail') {
+    if (transportParam === 'train' || transportParam === 'rail' || transportParam === 'metro') {
       conv.ask(
-        `To get the next train arrival at a Metro station you can say things such as 'Train timetable for Farragut North' or 'Rail timetable for Smithsonian'. What would you like me to do?`
+        `To get the next train arrival at a Metro station you can say things such as 'Train times for Farragut North' or 'Rail times for Smithsonian'. What would you like me to do?`
       );
     } else if (transportParam === 'bus') {
       conv.ask(
-        `To find out when the next bus arrives you can say 'Bus timetable for 123', replacing the 123 with the stop id found on the Metro bus stop sign. What would you like me to do?`
+        `To find out when the next bus arrives you can say 'Bus times for 123', replacing the 123 with the stop id found on the Metro bus stop sign. What would you like me to do?`
       );
     } else {
       conv.ask(
