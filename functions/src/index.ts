@@ -186,6 +186,8 @@ app.intent(
             })
           );
 
+          /* If the user doesn't have a screen and there's two or more items in the timetableCells array
+            then we read off the second entry. */
           if (
             !conv.surface.capabilities.has(
               'actions.capability.SCREEN_OUTPUT'

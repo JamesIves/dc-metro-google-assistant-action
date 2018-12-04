@@ -1,7 +1,7 @@
 {
-  "name": "dc-metro-google-assistant",
+  "name": "dc-metro-google-assistant-action",
   "description": "",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "James Ives",
   "license": "MIT",
   "scripts": {
@@ -30,5 +30,20 @@
     "tslint": "~5.8.0",
     "typescript": "~3.2.1"
   },
-  "private": true
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesIves/dc-metro-google-assistant-action.git"
+  },
+  "keywords": [
+    "dc-metro",
+    "washington-dc",
+    "google-assistant",
+    "civic"
+  ],
+  "bugs": {
+    "url": "https://github.com/JamesIves/dc-metro-google-assistant-action/issues"
+  },
+  "homepage": "https://github.com/JamesIves/dc-metro-google-assistant-action"
 }
+
