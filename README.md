@@ -33,4 +33,4 @@ You're able to invoke the action using Google Assistant by saying `Hey Google, t
 
 If you have a screen the action will send a detailed timetable to your device.
 
-![Screenshot](assets/screenshot.png)
+![Screenshot](assets/screenshot.jpg)
