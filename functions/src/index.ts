@@ -64,8 +64,7 @@ app.intent(
               }`,
               text: `The next train arriving at ${timetable.stationName} is a ${
                 lineNamesEnum[timetable.predictions[0].Line]
-              } line train and 
-              } has a final calling point at ${
+              } line train and has a final calling point at ${
                 timetable.predictions[0].Destination
               }. ${
                 timetable.predictions[0].Min === 'ARR'
@@ -151,7 +150,7 @@ app.intent(
           }
         }
       }
-    } else {
+    } else if (transportParam === 'bus') {
       const timetable: any = await fetchBusTimetable(station);
 
       if (timetable.Predictions) {
@@ -174,14 +173,14 @@ app.intent(
             new SimpleResponse({
               speech: `The next bus arriving at this stop is bound for ${
                 timetable.Predictions[0].DirectionText
-              } is due to arrive in ${
+              } and is due to arrive in ${
                 timetable.Predictions[0].Minutes
               } minutes.`,
               text: `The next bus arriving at stop ${
                 timetable.StopName
               } is bound for ${
                 timetable.Predictions[0].DirectionText
-              } ans is due to arrive in ${
+              } and is due to arrive in ${
                 timetable.Predictions[0].Minutes
               } minutes.`,
             })
@@ -207,65 +206,67 @@ app.intent(
                 } minutes.`,
               })
             );
+          }
 
-            /* Makes sure the user has a screen output before sending it table data. */
-            if (
-              conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
-            ) {
-              conv.ask(
-                new Table({
-                  title: timetable.StopName,
-                  subtitle: new Date().toLocaleString(),
-                  image: new Image({
-                    url:
-                      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
-                    alt: 'DC Metro Logo',
-                  }),
-                  columns: [
-                    {
-                      header: 'Route',
-                      align: 'LEADING',
-                    },
-                    {
-                      header: 'Destination',
-                    },
-                    {
-                      header: 'Arrival',
-                      align: 'TRAILING',
-                    },
-                  ],
-                  rows: timetableCells,
-                  buttons: new Button({
-                    title: 'Issues and Feedback',
-                    url:
-                      'https://github.com/JamesIves/dc-metro-google-action/issues',
-                  }),
-                })
-              );
-            }
+          /* Makes sure the user has a screen output before sending it table data. */
+          if (
+            conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
+          ) {
+            conv.ask(
+              new Table({
+                title: timetable.StopName,
+                subtitle: new Date().toLocaleString(),
+                image: new Image({
+                  url:
+                    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
+                  alt: 'DC Metro Logo',
+                }),
+                columns: [
+                  {
+                    header: 'Route',
+                    align: 'LEADING',
+                  },
+                  {
+                    header: 'Destination',
+                  },
+                  {
+                    header: 'Arrival',
+                    align: 'TRAILING',
+                  },
+                ],
+                rows: timetableCells,
+                buttons: new Button({
+                  title: 'Issues and Feedback',
+                  url:
+                    'https://github.com/JamesIves/dc-metro-google-action/issues',
+                }),
+              })
+            );
           }
         }
       } else {
         conv.ask('I could not locate a bus stop with that number.');
       }
+    } else {
+      conv.ask(`I wasn't able to understand your request, please try again.`);
     }
   }
 );
 
+/**
+ * DiagFlow intent for the help commands.
+ */
 app.intent(
   'command_intent',
-  async (
-    conv: any,
-    {transport, station}: {transport: string, station: string}
-  ) => {
+  async (conv: any, {transport}: {transport: string}) => {
     const transportParam = transport.toLowerCase();
 
-    if (transport === 'train' || transport === 'rail') {
-      conv.ask(`To get the next arrival a Metro station you can say things such as 'Train timetable for Farragut North' or 'Rail timetable for Smithsonian'.
-      If you have a screen I'll send you the most up to date information available to your device.`);
+    if (transportParam === 'train' || transportParam === 'rail') {
+      conv.ask(`To get the next train arrival at a Metro station you can say things such as 'Train timetable for Farragut North' or 'Rail timetable for Smithsonian'.`);
+    } else if (transportParam === 'bus') {
+      conv.ask(`To find out when the next bus arrives you can say 'Bus timetable for 123', replacing the 123 with the stop id found on the Metro bus stop sign.`);
     } else {
-      conv.ask(`To find out when the bus comes along you can say 'Bus timetable for 123', replacing the 123 with the stop ID found on the Metro bus stop sign.
-      If you have a screen I'll send you the most up to date information available to your device.`);
+      conv.ask(`I wasn't able to understand your request, please try again.`);
     }
   }
 );

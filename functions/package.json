@@ -1,5 +1,6 @@
 {
   "name": "dc-metro-google-assistant",
+  "description": "",
   "version": "0.0.1",
   "author": "James Ives",
   "license": "MIT",
@@ -17,13 +18,14 @@
   "main": "lib/index.js",
   "dependencies": {
     "actions-on-google": "^2.5.0",
+    "firebase-admin": "^6.3.0",
     "firebase-functions": "^2.1.0",
     "node-fetch": "^2.3.0",
-    "prettier": "*"
+    "prettier": "*",
+    "tape": "^4.6.2"
   },
   "devDependencies": {
     "@types/tape": "^4.2.32",
-    "tape": "^4.6.2",
     "ts-node": "7.0.1",
     "tslint": "~5.8.0",
     "typescript": "~2.8.3"
