@@ -43,7 +43,7 @@ app.intent(
         });
 
         if (!timetableCells.length) {
-          conv.ask(
+          conv.close(
             'There are no trains currently scheduled to stop at this station.'
           );
         } else {
@@ -75,38 +75,6 @@ app.intent(
               }`,
             })
           );
-
-          if (
-            !conv.surface.capabilities.has(
-              'actions.capability.SCREEN_OUTPUT'
-            ) &&
-            timetableCells.length >= 2
-          ) {
-            new SimpleResponse({
-              speech: `The train after that is a ${
-                lineNamesEnum[timetable.predictions[1].Line]
-              } line train and has a final calling point at ${
-                timetable.predictions[1].Destination
-              }. ${
-                timetable.predictions[1].Min === 'ARR'
-                  ? `It's arriving now.`
-                  : timetable.predictions[1].Min === 'BRD'
-                  ? `It's boarding now.`
-                  : `It arrives in ${timetable.predictions[1].Min} minutes.`
-              }`,
-              text: `The train after that is a ${
-                lineNamesEnum[timetable.predictions[1].Line]
-              } line train and has a final calling point at ${
-                timetable.predictions[1].Destination
-              }. ${
-                timetable.predictions[1].Min === 'ARR'
-                  ? `It's arriving now.`
-                  : timetable.predictions[1].Min === 'BRD'
-                  ? `It's boarding now.`
-                  : `It arrives in ${timetable.predictions[1].Min} minutes.`
-              }`,
-            });
-          }
 
           /* As this data can only be displayed on a screen, we check if the user actually has one
           before the payload is sent. */
@@ -148,6 +116,40 @@ app.intent(
               })
             );
           }
+
+          if (
+            !conv.surface.capabilities.has(
+              'actions.capability.SCREEN_OUTPUT'
+            ) &&
+            timetableCells.length >= 2
+          ) {
+            conv.close(new SimpleResponse({
+              speech: `The train after that is a ${
+                lineNamesEnum[timetable.predictions[1].Line]
+              } line train and has a final calling point at ${
+                timetable.predictions[1].Destination
+              }. ${
+                timetable.predictions[1].Min === 'ARR'
+                  ? `It's arriving now.`
+                  : timetable.predictions[1].Min === 'BRD'
+                  ? `It's boarding now.`
+                  : `It arrives in ${timetable.predictions[1].Min} minutes.`
+              }`,
+              text: `The train after that is a ${
+                lineNamesEnum[timetable.predictions[1].Line]
+              } line train and has a final calling point at ${
+                timetable.predictions[1].Destination
+              }. ${
+                timetable.predictions[1].Min === 'ARR'
+                  ? `It's arriving now.`
+                  : timetable.predictions[1].Min === 'BRD'
+                  ? `It's boarding now.`
+                  : `It arrives in ${timetable.predictions[1].Min} minutes.`
+              }`,
+            }));
+          } else {
+            conv.close();
+          }
         }
       }
     } else if (transportParam === 'bus') {
@@ -165,7 +167,7 @@ app.intent(
         });
 
         if (!timetableCells.length) {
-          conv.ask(
+          conv.close(
             'There are currently no buses scheduled to arrive at this stop.'
           );
         } else {
@@ -185,30 +187,6 @@ app.intent(
               } minutes.`,
             })
           );
-
-          /* If the user doesn't have a screen and there's two or more items in the timetableCells array
-            then we read off the second entry. */
-          if (
-            !conv.surface.capabilities.has(
-              'actions.capability.SCREEN_OUTPUT'
-            ) &&
-            timetableCells.length >= 2
-          ) {
-            conv.ask(
-              new SimpleResponse({
-                speech: `The bus after that is bound for ${
-                  timetable.Predictions[1].DirectionText
-                } and is due to arrive in ${
-                  timetable.Predictions[1].Minutes
-                } minutes.`,
-                text: `The bus after that is bound for ${
-                  timetable.Predictions[1].DirectionText
-                } and is due to arrive in ${
-                  timetable.Predictions[1].Minutes
-                } minutes.`,
-              })
-            );
-          }
 
           /* Makes sure the user has a screen output before sending it table data. */
           if (
@@ -245,9 +223,35 @@ app.intent(
               })
             );
           }
+
+          /* If the user doesn't have a screen and there's two or more items in the timetableCells array
+            then we read off the second entry. */
+          if (
+            !conv.surface.capabilities.has(
+              'actions.capability.SCREEN_OUTPUT'
+            ) &&
+            timetableCells.length >= 2
+          ) {
+            conv.close(
+              new SimpleResponse({
+                speech: `The bus after that is bound for ${
+                  timetable.Predictions[1].DirectionText
+                } and is due to arrive in ${
+                  timetable.Predictions[1].Minutes
+                } minutes.`,
+                text: `The bus after that is bound for ${
+                  timetable.Predictions[1].DirectionText
+                } and is due to arrive in ${
+                  timetable.Predictions[1].Minutes
+                } minutes.`,
+              })
+            );
+          } else {
+            conv.close()
+          }
         }
       } else {
-        conv.ask('I could not locate a bus stop with that number.');
+        conv.close('I could not locate a bus stop with that number.');
       }
     } else {
       conv.ask(`I wasn't able to understand your request, please try again.`);
@@ -264,11 +268,11 @@ app.intent(
     const transportParam = transport.toLowerCase();
 
     if (transportParam === 'train' || transportParam === 'rail') {
-      conv.ask(`To get the next train arrival at a Metro station you can say things such as 'Train timetable for Farragut North' or 'Rail timetable for Smithsonian'.`);
+      conv.ask(`To get the next train arrival at a Metro station you can say things such as 'Train timetable for Farragut North' or 'Rail timetable for Smithsonian'. What would you like me to do?`);
     } else if (transportParam === 'bus') {
-      conv.ask(`To find out when the next bus arrives you can say 'Bus timetable for 123', replacing the 123 with the stop id found on the Metro bus stop sign.`);
+      conv.ask(`To find out when the next bus arrives you can say 'Bus timetable for 123', replacing the 123 with the stop id found on the Metro bus stop sign. What would you like me to do?`);
     } else {
-      conv.ask(`I wasn't able to understand your request, please try again.`);
+      conv.ask(`I wasn't able to understand your request, please try saying either 'train commands' or 'bus commands' again.`);
     }
   }
 );

@@ -57,10 +57,12 @@ export function convertCode(code: string, dictionary: object) {
 export function convertStationAcronym(stationName: string) {
   const name = stationName.replace(/[^a-zA-Z ]/g, ' ');
   const stationNameArray = name.split(' ');
-  let result = stationNameArray.map((item) => {
+
+  const result = stationNameArray.map((item) => {
     return acronymEnum[item.toUpperCase()]
       ? acronymEnum[item.toUpperCase()]
       : item;
   });
+
   return result.join(' ').toLowerCase();
 }

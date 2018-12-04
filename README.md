@@ -7,19 +7,19 @@ This is a custom action for [Google Assistant](https://assistant.google.com/) wh
 You can view this application on the Google Assistant interaction directory [here](https://jamesiv.es). 📡
 
 ## Installation Steps 💽
-This application can be installed with npm by running `npm install`. With the dependencies installed you can compile, lint and format the code base using the the following commands.
+This application can be installed with Yarn by running `yarn install`. With the dependencies installed you can compile, lint and format the code base using the the following commands.
 
 | Command | Description |
 | ------------- | ------------- |
-| `npm run format` | Formats the code. |
-| `npm run lint` | Lints the code. |
-| `npm run build` | Prepares the code for production. |
-| `npm run test` | Runs the unit tests. All unit tests can be found within the [tests](functions/src/tests) directory. |
+| `yarn format` | Formats the code. |
+| `yarn lint` | Lints the code. |
+| `yarn build` | Prepares the code for production. |
+| `yarn test` | Runs the unit tests. All unit tests can be found within the [tests](functions/src/tests) directory. |
 
 ---
 
 ### Deploying the Action
-This action uses [Firebase functions](https://firebase.google.com/docs/functions/) and [DialogFlow](https://dialogflow.com/). It can be deployed to [Firebase](https://firebase.google.com/) by running the `firebase deploy` command and by [importing the DialogFlow intents](https://dialogflow.com/docs/agents/export-import-restore) using the [zip file](DC-Metro.zip) found in the root of the repository. You'll also need to setup an environment variable within your functions configuration called `metro.apiKey` with an [API key from WMATA](https://developer.wmata.com/).
+This action uses [Firebase functions](https://firebase.google.com/docs/functions/) and [DialogFlow](https://dialogflow.com/). It can be deployed to [Firebase](https://firebase.google.com/) by running the `yarn deploy` command and by [importing the DialogFlow intents](https://dialogflow.com/docs/agents/export-import-restore) using the [zip file](DC-Metro.zip) found in the root of the repository. You'll also need to setup an environment variable within your functions configuration called `metro.apiKey` with an [API key from WMATA](https://developer.wmata.com/).
 
 
 ## Interactions 💬
