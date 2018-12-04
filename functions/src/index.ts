@@ -26,7 +26,9 @@ app.intent(
       const timetable: any = await fetchTrainTimetable(station);
 
       if (!timetable) {
-        conv.close('I was not able to find a station by that name. Please double check the name you provided and try again.');
+        conv.close(
+          'I was not able to find a station by that name. Please double check the name you provided and try again.'
+        );
       } else {
         // Generates the neccersary table cells for display devices.
         const timetableCells = timetable.predictions.map((item) => {
