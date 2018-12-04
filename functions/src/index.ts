@@ -26,9 +26,7 @@ app.intent(
       const timetable: any = await fetchTrainTimetable(station);
 
       if (!timetable) {
-        conv.ask(
-          'I was not able to find a station by that name. Please try making your request more specific and try again.'
-        );
+        conv.close('I was not able to find a station by that name.');
       } else {
         // Generates the neccersary table cells for display devices.
         const timetableCells = timetable.predictions.map((item) => {
@@ -253,7 +251,9 @@ app.intent(
           }
         }
       } else {
-        conv.close('I could not locate a bus stop with that number.');
+        conv.close(
+          'I could not find a bus stop with that id. The stop id is located on the sign that the bus stops at.'
+        );
       }
     } else {
       conv.ask(`I wasn't able to understand your request, please try again.`);
