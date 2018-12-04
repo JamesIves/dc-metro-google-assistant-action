@@ -54,7 +54,7 @@ export function convertCode(code: string, dictionary: object) {
  * @param {string} stationName - The name of the station.
  * @returns {string} Returns a string with the appended full version of the acronymn, ie 'udc university of the district of columbia'.
  */
-export function convertStationAcronym(stationName) {
+export function convertStationAcronym(stationName: string) {
   const name = stationName.replace(/[^a-zA-Z ]/g, ' ');
   const stationNameArray = name.split(' ');
   let result = stationNameArray.map((item) => {
