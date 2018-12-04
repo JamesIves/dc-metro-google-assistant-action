@@ -1,7 +1,7 @@
 {
   "name": "dc-metro-google-assistant",
   "description": "DC Metro Google Assistant action that will show you the latest train and bus arrival information for your commute.",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "James Ives",
   "license": "MIT",
   "repository": {
