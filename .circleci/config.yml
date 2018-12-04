@@ -3,22 +3,22 @@ jobs:
   build:
     docker:
       - image: circleci/node:6.14
-      - steps:
-          - checkout
-          - restore_cache:
-              keys:
-                - v1-dependencies-{{ checksum "./functions/package.json" }}
-                - v1-dependencies-
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "./functions/package.json" }}
+            - v1-dependencies-
  
-          - run:
-              working_directory: ~/project/functions
-              command: yarn install
+      - run:
+          working_directory: ~/project/functions
+          command: yarn install
 
-          - save_cache:
-              paths:
-                - ~/project/functions/node_modules
-              key: v1-dependencies-{{ checksum "./functions/package.json" }}
+      - save_cache:
+          paths:
+            - ~/project/functions/node_modules
+          key: v1-dependencies-{{ checksum "./functions/package.json" }}
 
-          - run:
-              working_directory: ~/project/functions
-              command: yarn test
+      - run:
+          working_directory: ~/project/functions
+          command: yarn test
