@@ -16,7 +16,7 @@ This application can be installed with npm by running `npm install`. With the de
 ---
 
 ### Deploying
-This project can be deployed to Firebase by running the `firebase deploy` command and by importing the DialogFlow intents using the zip file found in the root of the repository. You'll also need to setup an environment variable within your functions configuration called `metro.apiKey` with an API key from WMATA.
+This project can be deployed to [Firebase](https://firebase.google.com/) by running the `firebase deploy` command and by [importing the DialogFlow intents](https://dialogflow.com/docs/agents/export-import-restore) using the [zip file](DC-Metro.zip) found in the root of the repository. You'll also need to setup an environment variable within your functions configuration called `metro.apiKey` with an [API key from WMATA](https://developer.wmata.com/).
 
 
 ## Interactions 💬
