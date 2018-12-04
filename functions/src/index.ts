@@ -44,7 +44,7 @@ app.intent(
 
         if (!timetableCells.length) {
           conv.ask(
-            'There are no trains currently scheduled to stop at this station. Would you like to try another one?'
+            'There are no trains currently scheduled to stop at this station. Would you like to try another station?'
           );
         } else {
           conv.ask(
@@ -170,7 +170,7 @@ app.intent(
 
         if (!timetableCells.length) {
           conv.ask(
-            'There are currently no buses scheduled to arrive at this stop. Would you like to try another one?'
+            'There are currently no buses scheduled to arrive at this stop. Would you like to try another bus stop?'
           );
         } else {
           conv.ask(
