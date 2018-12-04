@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/JamesIves/dc-metro-google-assistant-action/tree/master.svg?style=svg)](https://circleci.com/gh/JamesIves/dc-metro-google-assistant-action/tree/master) [![Issues](https://img.shields.io/github/issues/JamesIves/dc-metro-google-assistant-action.svg)](https://github.com/JamesIves/dc-metro-google-assistant-action/issues)
 
-This is a custom action for [Google Assistant](https://assistant.google.com/) which will tell you the current rail and bus predictions for the DC Metro transit system. These actions can be invoked on anything that supports Google Assistant such as a phone, a Google Home device, and the from the app.
+This is a custom action for [Google Assistant](https://assistant.google.com/) which will tell you the current rail and bus predictions for the [DC Metro transit system](https://www.wmata.com/). These actions can be invoked on anything that supports Google Assistant such as a phone, a Google Home device, and the from the app.
 
 You can view this application on the Google Assistant interaction directory [here](https://jamesiv.es). 📡
 
