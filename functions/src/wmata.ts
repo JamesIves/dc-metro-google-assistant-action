@@ -51,7 +51,9 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         Because this isn't helpful data to the user we filter these results out of the return. */
       const predictionObj = await predictionResponse.json();
       const predictionData = await predictionObj.Trains.filter(
-        (item) => (item.Line !== 'None' || item.Line !== 'No') && item.Destination !== 'ssenger'
+        (item) =>
+          (item.Line !== 'None' || item.Line !== 'No') &&
+          item.Destination !== 'ssenger'
       );
 
       return {
