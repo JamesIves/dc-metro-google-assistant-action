@@ -24,3 +24,5 @@ You're able to invoke the application using Google Assistant by saying `Hey Goog
 | `Train Timetable`  | You can ask the action for a rail or train timetable at a specific station. For instance you can say `Rail timetable for Farragut North` or `Train timetable for U Street`. Stations with acronyms in their name will also work, for example `Train timetable for George Mason University`. |
 | `Bus Timetable`  | You can ask the action for a bus stop timetable for a specific stop id. For instance you can say `Bus timetable for stop 123`. You can find the stop id on the sign that the bus stops at. |
 | `Commands`  | You can ask the action for a list of available commands by saying either `train commands` or `bus commands`.  |
+
+![Screenshot](assets/screenshot.png)
