@@ -49,10 +49,10 @@ export function convertCode(code: string, dictionary: object) {
 }
 
 /**
- * Accepts a station name with acronymns, and then appends the full version to the string.
+ * Accepts a station name with acronymns, and then changes them to the full version from within the acronymEnum.
  * This is done so a user can match on 'VT' and 'Virginia Tech' when requesting a station.
  * @param {string} stationName - The name of the station.
- * @returns {string} Returns a string with the appended full version of the acronymn, ie 'udc university of the district of columbia'.
+ * @returns {string} Returns a string with the full version of the acronymn, ie 'udc' turns to 'university of the district of columbia'.
  */
 export function convertStationAcronym(stationName: string) {
   const name = stationName.replace(/[^a-zA-Z ]/g, ' ');
