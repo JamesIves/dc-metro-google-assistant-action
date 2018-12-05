@@ -22,12 +22,16 @@ app.intent(
   ) => {
     const transportParam = transport.toLowerCase();
 
-    if (transportParam === 'train' || transportParam === 'rail') {
+    if (
+      transportParam === 'train' ||
+      transportParam === 'rail' ||
+      transportParam === 'metro'
+    ) {
       const timetable: any = await fetchTrainTimetable(station);
 
       if (!timetable) {
-        conv.close(
-          'I was not able to find a station by that name. Please double check the name you provided and try again.'
+        conv.ask(
+          `I couldn't find a station by that name. Please could you repeat that request for me?`
         );
       } else {
         // Generates the neccersary table cells for display devices.
@@ -84,7 +88,9 @@ app.intent(
             conv.ask(
               new Table({
                 title: timetable.stationName,
-                subtitle: new Date().toLocaleString(),
+                subtitle: new Date().toLocaleString('en-US', {
+                  timeZone: 'America/New_York',
+                }),
                 image: new Image({
                   url:
                     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
@@ -197,7 +203,9 @@ app.intent(
             conv.ask(
               new Table({
                 title: timetable.StopName,
-                subtitle: new Date().toLocaleString(),
+                subtitle: new Date().toLocaleString('en-US', {
+                  timeZone: 'America/New_York',
+                }),
                 image: new Image({
                   url:
                     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
@@ -253,12 +261,14 @@ app.intent(
           }
         }
       } else {
-        conv.close(
-          'I could not find a bus stop with that id. Please double checkthe number and try again, the stop id is located on the sign that the bus stops at.'
+        conv.ask(
+          'I could not find a bus stop with that id. The stop id is located on the sign that the bus stops at. Please could you repeat that request for me?'
         );
       }
     } else {
-      conv.ask(`I wasn't able to understand your request, please try again.`);
+      conv.ask(
+        `I wasn't able to understand your request, please could you try that again?`
+      );
     }
   }
 );
@@ -271,13 +281,17 @@ app.intent(
   async (conv: any, {transport}: {transport: string}) => {
     const transportParam = transport.toLowerCase();
 
-    if (transportParam === 'train' || transportParam === 'rail') {
+    if (
+      transportParam === 'train' ||
+      transportParam === 'rail' ||
+      transportParam === 'metro'
+    ) {
       conv.ask(
-        `To get the next train arrival at a Metro station you can say things such as 'Train timetable for Farragut North' or 'Rail timetable for Smithsonian'. What would you like me to do?`
+        `To get the next train arrival at a Metro station you can say things such as 'Train times for Farragut North' or 'Rail times for Smithsonian'. What would you like me to do?`
       );
     } else if (transportParam === 'bus') {
       conv.ask(
-        `To find out when the next bus arrives you can say 'Bus timetable for 123', replacing the 123 with the stop id found on the Metro bus stop sign. What would you like me to do?`
+        `To find out when the next bus arrives you can say 'Bus times for 123', replacing the 123 with the stop id found on the Metro bus stop sign. What would you like me to do?`
       );
     } else {
       conv.ask(
