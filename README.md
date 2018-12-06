@@ -35,4 +35,4 @@ If you have a screen the action will send a detailed timetable to your device.
 
 ![Screenshot](assets/screenshot.jpg)
 
-The logo used on the Google Assistant interaction directory was created by [Paganini](https://twitter.com/PaganiniArt).
+The app icon used for the action was created by [Paganini](https://twitter.com/PaganiniArt).
