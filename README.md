@@ -34,3 +34,5 @@ You're able to invoke the action using Google Assistant by saying `Hey Google, t
 If you have a screen the action will send a detailed timetable to your device.
 
 ![Screenshot](assets/screenshot.jpg)
+
+The logo used on the Google Assistant interaction directory was created by [Paganini](https://twitter.com/PaganiniArt).
