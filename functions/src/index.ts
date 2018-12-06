@@ -93,8 +93,8 @@ app.intent(
                 }),
                 image: new Image({
                   url:
-                    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
-                  alt: 'DC Metro Logo',
+                    'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon_large.png',
+                  alt: 'Metro Logo',
                 }),
                 columns: [
                   {
@@ -208,8 +208,8 @@ app.intent(
                 }),
                 image: new Image({
                   url:
-                    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WMATA_Metro_Logo_small.svg/1024px-WMATA_Metro_Logo_small.svg.png',
-                  alt: 'DC Metro Logo',
+                    'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon_large.png',
+                  alt: 'Metro Logo',
                 }),
                 columns: [
                   {
