@@ -301,4 +301,11 @@ app.intent(
   }
 );
 
+/**
+ * DiagFlow intent for cancel commands.
+ */
+app.intent('goodbye_intent', (conv) => {
+  conv.close(`Have a good day!`);
+});
+
 exports.dcMetro = functions.https.onRequest(app);
