@@ -18,7 +18,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "actions-on-google": "^2.5.0",
-    "firebase-admin": "^6.3.0",
+    "firebase-admin": "^6.4.0",
     "firebase-functions": "^2.1.0",
     "node-fetch": "^2.3.0",
     "prettier": "*",
