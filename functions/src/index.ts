@@ -7,7 +7,7 @@ import {
   SimpleResponse,
 } from 'actions-on-google';
 import {lineNamesEnum, serviceCodesEnum, convertCode} from './util';
-import {fetchTrainTimetable, fetchBusTimetable} from './wmata';
+import {fetchTrainTimetable, fetchTrainIncidents, fetchBusTimetable} from './wmata';
 
 const app = dialogflow({debug: true});
 
@@ -28,6 +28,7 @@ app.intent(
       transportParam === 'metro'
     ) {
       const timetable: any = await fetchTrainTimetable(station);
+      const incidents: any = await fetchTrainIncidents();
 
       if (!timetable) {
         conv.ask(

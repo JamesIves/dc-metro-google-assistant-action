@@ -87,3 +87,16 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
     return [];
   }
 };
+
+export const fetchTrainIncidents = async (): Promise<object> => {
+  try {
+    const incidentResponse = await fetch(
+      `${rootUrl}/Incidents.svc/json/Incidents&api_key${wmataApiKey}`,
+      {method: 'GET'}
+    );
+
+    return await incidentResponse.json();
+  } catch (error) {
+    return [];
+  }
+}
