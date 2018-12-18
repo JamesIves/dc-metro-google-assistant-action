@@ -7,7 +7,11 @@ import {
   SimpleResponse,
 } from 'actions-on-google';
 import {lineNamesEnum, serviceCodesEnum, convertCode} from './util';
-import {fetchTrainTimetable, fetchTrainIncidents, fetchBusTimetable} from './wmata';
+import {
+  fetchTrainTimetable,
+  fetchTrainIncidents,
+  fetchBusTimetable,
+} from './wmata';
 
 const app = dialogflow({debug: true});
 
@@ -28,7 +32,6 @@ app.intent(
       transportParam === 'metro'
     ) {
       const timetable: any = await fetchTrainTimetable(station);
-      const incidents: any = await fetchTrainIncidents();
 
       if (!timetable) {
         conv.ask(
@@ -156,6 +159,56 @@ app.intent(
                 }`,
               })
             );
+          }
+
+          if (timetable.incidents.length) {
+            conv.ask(
+              `There are ${
+                timetable.incidents.length
+              } incidents affecting the lines which service this station.`
+            );
+
+            if (
+              conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
+            ) {
+              const incidentCells = timetable.incidents.map((item) => {
+                return {
+                  cells: [
+                    item.IncidentType || 'TBD',
+                    item.Description || 'TDB',
+                  ],
+                };
+              });
+
+              conv.ask(
+                new Table({
+                  title: timetable.StopName,
+                  subtitle: new Date().toLocaleString('en-US', {
+                    timeZone: 'America/New_York',
+                  }),
+                  image: new Image({
+                    url:
+                      'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon_large.png',
+                    alt: 'Metro Logo',
+                  }),
+                  columns: [
+                    {
+                      header: 'Incident',
+                      align: 'LEADING',
+                    },
+                    {
+                      header: 'Description',
+                    },
+                  ],
+                  rows: incidentCells,
+                })
+              );
+            } else {
+              timetable.incidents.map((incident) =>
+                conv.ask(incident.Description)
+              );
+              conv.close();
+            }
           } else {
             conv.close();
           }
