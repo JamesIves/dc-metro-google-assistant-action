@@ -133,7 +133,7 @@ app.intent(
             ) &&
             timetableCells.length >= 2
           ) {
-            conv.close(
+            return conv.close(
               new SimpleResponse({
                 speech: `The train after that is a ${
                   lineNamesEnum[timetable.predictions[1].Line]
@@ -161,56 +161,18 @@ app.intent(
             );
           }
 
-          if (timetable.incidents.length) {
-            conv.ask(
+          if (timetable.incidents.length > 0) {
+            const incidents = timetable.incidents
+              .map((incident) => incident.Description)
+              .join(' ');
+            return conv.close(
               `There are ${
                 timetable.incidents.length
-              } incidents affecting the lines which service this station.`
+              } incidents affecting the lines which service this station. \n ${incidents}
+              `
             );
-
-            if (
-              conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')
-            ) {
-              const incidentCells = timetable.incidents.map((item) => {
-                return {
-                  cells: [
-                    item.IncidentType || 'TBD',
-                    item.Description || 'TDB',
-                  ],
-                };
-              });
-
-              conv.ask(
-                new Table({
-                  title: timetable.StopName,
-                  subtitle: new Date().toLocaleString('en-US', {
-                    timeZone: 'America/New_York',
-                  }),
-                  image: new Image({
-                    url:
-                      'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon_large.png',
-                    alt: 'Metro Logo',
-                  }),
-                  columns: [
-                    {
-                      header: 'Incident',
-                      align: 'LEADING',
-                    },
-                    {
-                      header: 'Description',
-                    },
-                  ],
-                  rows: incidentCells,
-                })
-              );
-            } else {
-              timetable.incidents.map((incident) =>
-                conv.ask(incident.Description)
-              );
-              conv.close();
-            }
           } else {
-            conv.close();
+            return conv.close('There are no incidents affecting this station.');
           }
         }
       }
@@ -296,7 +258,7 @@ app.intent(
             ) &&
             timetableCells.length >= 2
           ) {
-            conv.close(
+            return conv.close(
               new SimpleResponse({
                 speech: `The bus after that is bound for ${
                   timetable.Predictions[1].DirectionText
@@ -311,7 +273,7 @@ app.intent(
               })
             );
           } else {
-            conv.close();
+            return conv.close();
           }
         }
       } else {
@@ -359,7 +321,7 @@ app.intent(
  * DiagFlow intent for cancel commands.
  */
 app.intent('goodbye_intent', (conv) => {
-  conv.close(`Have a good day!`);
+  return conv.close(`Have a good day!`);
 });
 
 exports.dcMetro = functions.https.onRequest(app);
