@@ -7,11 +7,7 @@ import {
   SimpleResponse,
 } from 'actions-on-google';
 import {lineNamesEnum, serviceCodesEnum, convertCode} from './util';
-import {
-  fetchTrainTimetable,
-  fetchTrainIncidents,
-  fetchBusTimetable,
-} from './wmata';
+import {fetchTrainTimetable, fetchBusTimetable} from './wmata';
 
 const app = dialogflow({debug: true});
 
@@ -133,7 +129,7 @@ app.intent(
             ) &&
             timetableCells.length >= 2
           ) {
-            return conv.close(
+            return conv.ask(
               new SimpleResponse({
                 speech: `The train after that is a ${
                   lineNamesEnum[timetable.predictions[1].Line]
@@ -164,7 +160,7 @@ app.intent(
           if (timetable.incidents.length > 0) {
             const incidents = timetable.incidents
               .map((incident) => incident.Description)
-              .join(' ');
+              .join('\n');
             return conv.close(
               `There are ${
                 timetable.incidents.length
