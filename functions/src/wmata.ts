@@ -57,9 +57,21 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
           (item.Destination !== 'ssenger' && item.Destination !== 'Train')
       );
 
+      /* Applicable line codes are stored in seperate keys in the WMATA API. The following block
+        Checks all 4 and adds them to an array. This is later used to figure out if there's any
+        disruptions occuring at the station that is requested. */
+      const lines = [];
+      if (stationData.LineCode1 !== null) lines.push(stationData.LineCode1);
+      if (stationData.LineCode2 !== null) lines.push(stationData.lineCode2);
+      if (stationData.LineCode3 !== null) lines.push(stationData.LineCode3);
+      if (stationData.LineCode4 !== null) lines.push(stationData.LineCode4);
+
+      const incidents = await fetchTrainIncidents(lines);
+
       return {
         stationName: stationData.Name,
         predictions: predictionData,
+        incidents,
       };
     } else {
       return null;
@@ -83,6 +95,39 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
       {method: 'GET'}
     );
     return await predictionResponse.json();
+  } catch (error) {
+    return [];
+  }
+};
+
+/**
+ * Accepts an array of line codes  and returns a string of incidents.
+ * @param {array} lines - An array of line codes, for example: ["RD", "BL"].
+ * @returns {Promise} Returns a promise.
+ */
+export const fetchTrainIncidents = async (
+  lines: Array<string>
+): Promise<object> => {
+  try {
+    const incidentResponse = await fetch(
+      `${rootUrl}/Incidents.svc/json/Incidents?api_key=${wmataApiKey}`,
+      {method: 'GET'}
+    );
+
+    const incidentObj = await incidentResponse.json();
+
+    return await incidentObj.Incidents.reduce((incidents, current) => {
+      const linesAffected = current.LinesAffected.split(/;[\s]?/).filter(
+        (code) => code !== ''
+      );
+      lines.map((line) => {
+        if (linesAffected.includes(line)) {
+          incidents.push(current);
+        }
+      });
+
+      return incidents;
+    }, []);
   } catch (error) {
     return [];
   }
