@@ -5,8 +5,14 @@ import {
   Table,
   Button,
   SimpleResponse,
+  Suggestions,
 } from 'actions-on-google';
-import {lineNamesEnum, serviceCodesEnum, convertCode} from './util';
+import {
+  lineNamesEnum,
+  serviceCodesEnum,
+  convertCode,
+  serviceIncidents,
+} from './util';
 import {fetchTrainTimetable, fetchBusTimetable} from './wmata';
 
 const app = dialogflow({debug: true});
@@ -158,14 +164,13 @@ app.intent(
           }
 
           if (timetable.incidents.length > 0) {
-            const incidents = timetable.incidents
-              .map((incident) => incident.Description)
-              .join('\n');
-            return conv.close(
-              `There are ${
-                timetable.incidents.length
-              } incidents affecting the lines which service this station. \n ${incidents}
-              `
+            serviceIncidents.setIncidents({
+              data: timetable.incidents,
+              station: timetable.stationName,
+            });
+            return conv.ask(
+              timetable.incidents.length == 1 ? `There is an incident affecting the lines which service this station. Would you like to know about it?`
+              : `There are ${timetable.incidents.length} incidents affecting the lines which service this station. Would you like to know about them?`
             );
           } else {
             return conv.close('There are no incidents affecting this station.');
@@ -286,6 +291,71 @@ app.intent(
 );
 
 /**
+ * DiagFlow intent for the incident readouts.
+ */
+app.intent('metro_timetable - yes', async (conv: any) => {
+  conv.ask('HELLO!??')
+  const incidents = await serviceIncidents.getIncidents();
+  if (incidents.data.length > 0) {
+    const incidentCells = incidents.data.map((item) => {
+      return {
+        cells: [
+          item.Description || 'N/A',
+          item.IncidentType || 'N/A',
+          item.LinesAffected || 'N/A',
+        ],
+      };
+    });
+
+    if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
+      conv.close(
+        new Table({
+          title: `${incidents.station} Incidents`,
+          subtitle: new Date().toLocaleString('en-US', {
+            timeZone: 'America/New_York',
+          }),
+          image: new Image({
+            url:
+              'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon_large.png',
+            alt: 'Metro Logo',
+          }),
+          columns: [
+            {
+              header: 'Description',
+              align: 'LEADING',
+            },
+            {
+              header: 'Type',
+            },
+            {
+              header: 'Lines Affected',
+              align: 'TRAILING',
+            },
+          ],
+          rows: incidentCells,
+        })
+      );
+    } else {
+      const incidentTts = incidents.data
+        .map((incident) => incident.Description)
+        .join('\n');
+      conv.close(`Here are the incidents affecting this station: ${incidentTts}`);
+    }
+
+    // Tears down the incident object once the data has been read.
+    // This is done so the same data isn't read twice on multiple invocations.
+    return serviceIncidents.setIncidents({
+      station: null,
+      data: [],
+    });
+  } else {
+    conv.ask(
+      `I wasn't able to understand your request, could you please say that again?`
+    );
+  }
+});
+
+/**
  * DiagFlow intent for the help commands.
  */
 app.intent(
@@ -298,20 +368,42 @@ app.intent(
       transportParam === 'rail' ||
       transportParam === 'metro'
     ) {
+      /*conv.ask(
+        new Suggestions([
+          'Train times for Farragut North',
+          'Rail times for Smithsonian',
+          'Bus Commands',
+        ])
+      );*/
       conv.ask(
         `To get the next train arrival at a Metro station you can say things such as 'Train times for Farragut North' or 'Rail times for Smithsonian'. What would you like me to do?`
       );
     } else if (transportParam === 'bus') {
       conv.ask(
+        //new Suggestions(['Bus times for stop 1001993', 'Train Commands'])
+      );
+      conv.ask(
         `To find out when the next bus arrives you can say 'Bus times for 123', replacing the 123 with the stop id found on the Metro bus stop sign. What would you like me to do?`
       );
     } else {
+      conv.ask(new Suggestions(['Train Commands', 'Bus Commands']));
       conv.ask(
         `I wasn't able to understand your request, please try saying either 'train commands' or 'bus commands' again.`
       );
     }
   }
 );
+
+/**
+ * DiagFlow intent for cancel commands.
+ */
+app.intent('default_welcome_intent', (conv) => {
+  conv.ask(new Suggestions(['Train Commands', 'Bus Commands']));
+
+  return conv.ask(
+    `Welcome! I'm able to tell you when the next train or bus is arriving at a station or stop in the Washington DC area. To find out how to use my commands please say "train commands" or "bus commands".`
+  );
+});
 
 /**
  * DiagFlow intent for cancel commands.

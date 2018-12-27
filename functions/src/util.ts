@@ -1,3 +1,17 @@
+/** Object which contains all incidents so it can be passed back and forth between intents. */
+export const serviceIncidentsObj = {
+  incidents: {
+    station: null,
+    data: null
+  },
+};
+
+/** Sets/Fetches service incidents for intent passbacks. */
+export const serviceIncidents = {
+  setIncidents: (incidents) => (serviceIncidentsObj.incidents = incidents),
+  getIncidents: () => serviceIncidentsObj.incidents,
+};
+
 /** Enum containing all of the line names on the DC Metro. */
 export const lineNamesEnum = {
   RD: 'Red',

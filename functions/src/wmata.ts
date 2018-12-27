@@ -71,7 +71,21 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
       return {
         stationName: stationData.Name,
         predictions: predictionData,
-        incidents,
+        incidents: [
+          {
+            DateUpdated: '2010-07-29T14:21:28',
+            DelaySeverity: null,
+            Description:
+              'Red Line: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+            EmergencyText: null,
+            EndLocationFullName: null,
+            IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+            IncidentType: 'Delay',
+            LinesAffected: 'RD;',
+            PassengerDelay: 0,
+            StartLocationFullName: null,
+          },
+        ],
       };
     } else {
       return null;
