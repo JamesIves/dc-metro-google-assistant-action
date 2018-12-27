@@ -296,7 +296,7 @@ app.intent(
 app.intent('metro_timetable - yes', async (conv: any) => {
   conv.ask('HELLO!??')
   const incidents = await serviceIncidents.getIncidents();
-  if (incidents.data.length > 0) {
+  if (incidents && incidents.data && incidents.data.length > 0) {
     const incidentCells = incidents.data.map((item) => {
       return {
         cells: [
