@@ -6,7 +6,7 @@ export const serviceIncidentsObj = {
   },
 };
 
-/** Sets/Fetches service incidents for intent passbacks. */
+/** Sets/Fetches service incidents for intent pass backs. */
 export const serviceIncidents = {
   setIncidents: (incidents: {station: any, data: any[]}) =>
     (serviceIncidentsObj.incidents = incidents),
@@ -34,11 +34,11 @@ export const acronymEnum = {
   MT: 'Mount',
   AMER: 'American',
   PL: 'Place',
-  UDC: 'Univeristy of the District of Columbia',
+  UDC: 'University of the District of Columbia',
   AU: 'American University',
   AVE: 'Avenue',
   CUA: 'Catholic University of America',
-  NOMA: 'North of Massechusets Avenue',
+  NOMA: 'North of Massachusetts Avenue',
   GMU: 'George Mason University',
   VT: 'Virginia Tech',
   UVA: 'University of Virginia',
@@ -64,10 +64,10 @@ export function convertCode(code: string, dictionary: object): string {
 }
 
 /**
- * Accepts a station name with acronymns and adjusts it to use the full version.
+ * Accepts a station name with acronyms and adjusts it to use the full version.
  * This is done so a user can match on 'VT' and 'Virginia Tech' when requesting a station.
  * @param {string} stationName - The name of the station.
- * @returns {string} Returns a string with the full version of the acronymn, ie 'udc' turns to 'university of the district of columbia'.
+ * @returns {string} Returns a string with the full version of the acronym, ie 'udc' turns to 'university of the district of columbia'.
  */
 export function convertStationAcronym(stationName: string): string {
   const name = stationName.replace(/[^a-zA-Z ]/g, ' ');

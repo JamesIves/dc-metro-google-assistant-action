@@ -86,7 +86,7 @@ test('should correctly convert acronyms for station searching', (t: any) => {
 
   t.equal(
     convertStationAcronym('UDC University'),
-    'univeristy of the district of columbia university',
+    'university of the district of columbia university',
     'Should convert UDC to University of the District of Columbia.'
   );
 
@@ -110,8 +110,8 @@ test('should correctly convert acronyms for station searching', (t: any) => {
 
   t.equal(
     convertStationAcronym('NOMA'),
-    'north of massechusets avenue',
-    'Should convert NOMA to North of Massechusets Avenue.'
+    'north of massachusetts avenue',
+    'Should convert NOMA to North of Massachusetts Avenue.'
   );
 
   t.equal(
