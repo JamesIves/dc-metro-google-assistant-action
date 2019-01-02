@@ -67,7 +67,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         predictionObj.Trains = predictionObj.Trains.concat(
           predictionObjMulti.Trains
         )
-          .sort((a: {Min: number}, b: {Min: number}) => b.Min - a.Min)
+          .sort((a: {Min: number}, b: {Min: number}) => a.Min - b.Min)
           .reverse();
       }
 
