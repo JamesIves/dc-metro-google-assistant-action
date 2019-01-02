@@ -4,9 +4,10 @@ import {
   convertStationAcronym,
   lineNamesEnum,
   serviceCodesEnum,
+  serviceIncidents,
 } from '../util';
 
-test('should correctly convert the service and line codes', (t) => {
+test('should correctly convert the service and line codes', (t: any) => {
   t.plan(8);
 
   t.equal(
@@ -56,7 +57,7 @@ test('should correctly convert the service and line codes', (t) => {
   t.end();
 });
 
-test('should correctly convert acronyms for station searching', (t) => {
+test('should correctly convert acronyms for station searching', (t: any) => {
   t.plan(17);
 
   t.equal(
@@ -159,6 +160,30 @@ test('should correctly convert acronyms for station searching', (t) => {
     convertStationAcronym('Penn'),
     'pennsylvania',
     'Should convert PENN to Pennsylvania.'
+  );
+
+  t.end();
+});
+
+test('should correctly stores incidents and the station name as a global variable', (t: any) => {
+  serviceIncidents.setIncidents({
+    data: [
+      {name: 'Incident', station: 'U Street'},
+      {name: 'Another Incident', station: 'Mount Vernon'},
+    ],
+    station: 'Mount Vernon',
+  });
+
+  t.deepEquals(
+    serviceIncidents.getIncidents(),
+    {
+      data: [
+        {name: 'Incident', station: 'U Street'},
+        {name: 'Another Incident', station: 'Mount Vernon'},
+      ],
+      station: 'Mount Vernon',
+    },
+    'Correctly returns the value that was set.'
   );
 
   t.end();

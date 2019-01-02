@@ -29,7 +29,7 @@ export const serviceCodesEnum = {
   BRD: 'Boarding',
 };
 
-/** Enum containing all station acronymns and their matching string. */
+/** Enum containing all station acronyms and their matching string. */
 export const acronymEnum = {
   MT: 'Mount',
   AMER: 'American',
