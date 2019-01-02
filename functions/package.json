@@ -17,6 +17,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@types/node-fetch": "^2.1.4",
     "actions-on-google": "^2.5.0",
     "firebase-admin": "^6.4.0",
     "firebase-functions": "^2.1.0",
@@ -46,4 +47,3 @@
   },
   "homepage": "https://github.com/JamesIves/dc-metro-google-assistant-action"
 }
-

@@ -2,13 +2,14 @@
 export const serviceIncidentsObj = {
   incidents: {
     station: null,
-    data: null
+    data: [],
   },
 };
 
 /** Sets/Fetches service incidents for intent passbacks. */
 export const serviceIncidents = {
-  setIncidents: (incidents) => (serviceIncidentsObj.incidents = incidents),
+  setIncidents: (incidents: {station: any, data: any[]}) =>
+    (serviceIncidentsObj.incidents = incidents),
   getIncidents: () => serviceIncidentsObj.incidents,
 };
 
@@ -54,7 +55,7 @@ export const acronymEnum = {
  * @param {object} dictionary - The enum that the code should be matched to.
  * @returns {string} Returns the matching string.
  */
-export function convertCode(code: string, dictionary: object) {
+export function convertCode(code: string, dictionary: object): string {
   if (dictionary[code]) {
     return dictionary[code];
   } else {
@@ -68,7 +69,7 @@ export function convertCode(code: string, dictionary: object) {
  * @param {string} stationName - The name of the station.
  * @returns {string} Returns a string with the full version of the acronymn, ie 'udc' turns to 'university of the district of columbia'.
  */
-export function convertStationAcronym(stationName: string) {
+export function convertStationAcronym(stationName: string): string {
   const name = stationName.replace(/[^a-zA-Z ]/g, ' ');
   const stationNameArray = name.split(' ');
 

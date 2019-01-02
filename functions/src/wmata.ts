@@ -23,14 +23,16 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
       is performed. */
     let stationName = station.toLowerCase();
     let stationData =
-      stations.Stations.find((item) =>
-        item.Name.toLowerCase().includes(stationName)
+      stations.Stations.find(
+        (item: {
+          Name: {toLowerCase: () => {includes: (arg0: string) => void}},
+        }) => item.Name.toLowerCase().includes(stationName)
       ) || null;
 
     if (!stationData) {
       stationName = convertStationAcronym(station).toLowerCase();
       stationData =
-        stations.Stations.filter((item) =>
+        stations.Stations.filter((item: {Name: string}) =>
           stationName.split(' ').every((word) =>
             convertStationAcronym(item.Name)
               .toLowerCase()
@@ -47,11 +49,32 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         {method: 'GET'}
       );
 
+      let predictionObj = await predictionResponse.json();
+
+      if (stationData.StationTogether1) {
+        /* Some stations have multiple platforms, and the sation code for these get stored in the
+        StationTogehter1 key. The following code fetches the prediction data for the multi platform station,
+        adds it to the previous one, and then sorts it. */
+        const predictionResponseMulti = await fetch(
+          `${rootUrl}/StationPrediction.svc/json/GetPrediction/${
+            stationData.StationTogether1
+          }?api_key=${wmataApiKey}`,
+          {method: 'GET'}
+        );
+
+        const predictionObjMulti = await predictionResponseMulti.json();
+
+        predictionObj.Trains = predictionObj.Trains.concat(
+          predictionObjMulti.Trains
+        )
+          .sort((a: {Min: number}, b: {Min: number}) => b.Min - a.Min)
+          .reverse();
+      }
+
       /* Inbound trains which do not accept passengers are listed as 'No' and 'None' in the WMATA API.
         Because this isn't helpful data to the user we filter these results out of the return. */
-      const predictionObj = await predictionResponse.json();
       const predictionData = await predictionObj.Trains.filter(
-        (item) =>
+        (item: {Line: string, Destination: string}) =>
           item.Line !== 'None' &&
           item.Line !== 'No' &&
           (item.Destination !== 'ssenger' && item.Destination !== 'Train')
@@ -118,7 +141,7 @@ export const fetchTrainIncidents = async (
 
     return await incidentObj.Incidents.reduce((incidents, current) => {
       const linesAffected = current.LinesAffected.split(/;[\s]?/).filter(
-        (code) => code !== ''
+        (code: string) => code !== ''
       );
       lines.map((line) => {
         if (linesAffected.includes(line)) {
