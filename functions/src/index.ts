@@ -3,9 +3,9 @@ import {
   dialogflow,
   Image,
   Table,
-  Button,
   SimpleResponse,
   Suggestions,
+  LinkOutSuggestion
 } from 'actions-on-google';
 import {
   lineNamesEnum,
@@ -33,6 +33,7 @@ app.intent(
       transportParam === 'rail' ||
       transportParam === 'metro'
     ) {
+      // Handles train times.
       const timetable: any = await fetchTrainTimetable(station);
 
       if (!timetable) {
@@ -120,13 +121,13 @@ app.intent(
                   },
                 ],
                 rows: timetableCells,
-                buttons: new Button({
-                  title: 'Issues and Feedback',
-                  url:
-                    'https://github.com/JamesIves/dc-metro-google-action/issues',
-                }),
               })
             );
+
+            conv.ask(new LinkOutSuggestion({
+              name: 'Report Issues',
+              url: 'https://github.com/JamesIves/dc-metro-google-assistant-action/issues',
+            }));
           }
 
           if (
@@ -168,16 +169,22 @@ app.intent(
               data: timetable.incidents,
               station: timetable.stationName,
             });
+
+            /* Sets the conversation context with a lifespan of one input.
+              This occurs so the user can say 'yes' to trigger the incidents intent, but only when prompted. */
+            conv.contexts.set('station_incidents_present', 1);
+            new Suggestions(['Yes', 'No'])
             return conv.ask(
               timetable.incidents.length == 1 ? `There is an incident affecting the lines which service this station. Would you like to know about it?`
               : `There are ${timetable.incidents.length} incidents affecting the lines which service this station. Would you like to know about them?`
             );
           } else {
-            return conv.close('There are no incidents affecting this station.');
+            return conv.ask('There are no incidents affecting this station. Is there anything else I can do for you?');
           }
         }
       }
     } else if (transportParam === 'bus') {
+      // Handles bus times.
       const timetable: any = await fetchBusTimetable(station);
 
       if (timetable.Predictions) {
@@ -242,13 +249,14 @@ app.intent(
                   },
                 ],
                 rows: timetableCells,
-                buttons: new Button({
-                  title: 'Issues and Feedback',
-                  url:
-                    'https://github.com/JamesIves/dc-metro-google-action/issues',
-                }),
               })
             );
+
+  
+            conv.ask(new LinkOutSuggestion({
+              name: 'Report Issues',
+              url: 'https://github.com/JamesIves/dc-metro-google-assistant-action/issues',
+            }));
           }
 
           /* If the user doesn't have a screen and there's two or more items in the timetableCells array
@@ -279,7 +287,7 @@ app.intent(
         }
       } else {
         conv.ask(
-          'I could not find a bus stop with that id. The stop id is located on the sign that the bus stops at. Please could you repeat that request for me?'
+          'I could not find a bus stop with that i.d. The stop i.d is located on the sign that the bus stops at. Please could you repeat that request for me?'
         );
       }
     } else {
@@ -293,8 +301,7 @@ app.intent(
 /**
  * DiagFlow intent for the incident readouts.
  */
-app.intent('metro_timetable - yes', async (conv: any) => {
-  conv.ask('HELLO!??')
+app.intent('incident_intent', async (conv: any) => {
   const incidents = await serviceIncidents.getIncidents();
   if (incidents && incidents.data && incidents.data.length > 0) {
     const incidentCells = incidents.data.map((item) => {
@@ -302,13 +309,13 @@ app.intent('metro_timetable - yes', async (conv: any) => {
         cells: [
           item.Description || 'N/A',
           item.IncidentType || 'N/A',
-          item.LinesAffected || 'N/A',
         ],
       };
     });
 
     if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
-      conv.close(
+      conv.ask(`I've sent the list of incidents to your device.`)
+      conv.ask(
         new Table({
           title: `${incidents.station} Incidents`,
           subtitle: new Date().toLocaleString('en-US', {
@@ -327,10 +334,6 @@ app.intent('metro_timetable - yes', async (conv: any) => {
             {
               header: 'Type',
             },
-            {
-              header: 'Lines Affected',
-              align: 'TRAILING',
-            },
           ],
           rows: incidentCells,
         })
@@ -339,19 +342,15 @@ app.intent('metro_timetable - yes', async (conv: any) => {
       const incidentTts = incidents.data
         .map((incident) => incident.Description)
         .join('\n');
-      conv.close(`Here are the incidents affecting this station: ${incidentTts}`);
+      conv.ask(`Here are the incidents affecting this station: ${incidentTts}`);
     }
-
-    // Tears down the incident object once the data has been read.
-    // This is done so the same data isn't read twice on multiple invocations.
+    conv.ask('Is there anything else I can help you with?')
+    /* Tears down the incident object once the data has been read.
+      This is done so the same data isn't read twice on multiple invocations. */
     return serviceIncidents.setIncidents({
       station: null,
       data: [],
     });
-  } else {
-    conv.ask(
-      `I wasn't able to understand your request, could you please say that again?`
-    );
   }
 });
 
@@ -368,19 +367,19 @@ app.intent(
       transportParam === 'rail' ||
       transportParam === 'metro'
     ) {
-      /*conv.ask(
+      conv.ask(
         new Suggestions([
-          'Train times for Farragut North',
-          'Rail times for Smithsonian',
+          'Train times for GMU',
+          'Rail times for GMU',
           'Bus Commands',
         ])
-      );*/
+      );
       conv.ask(
         `To get the next train arrival at a Metro station you can say things such as 'Train times for Farragut North' or 'Rail times for Smithsonian'. What would you like me to do?`
       );
     } else if (transportParam === 'bus') {
       conv.ask(
-        //new Suggestions(['Bus times for stop 1001993', 'Train Commands'])
+        new Suggestions(['Train Commands'])
       );
       conv.ask(
         `To find out when the next bus arrives you can say 'Bus times for 123', replacing the 123 with the stop id found on the Metro bus stop sign. What would you like me to do?`
@@ -388,7 +387,7 @@ app.intent(
     } else {
       conv.ask(new Suggestions(['Train Commands', 'Bus Commands']));
       conv.ask(
-        `I wasn't able to understand your request, please try saying either 'train commands' or 'bus commands' again.`
+        `I wasn't able to understand your request, please try saying either 'Train Commands' or 'Bus Commands' again.`
       );
     }
   }
@@ -401,7 +400,7 @@ app.intent('default_welcome_intent', (conv) => {
   conv.ask(new Suggestions(['Train Commands', 'Bus Commands']));
 
   return conv.ask(
-    `Welcome! I'm able to tell you when the next train or bus is arriving at a station or stop in the Washington DC area. To find out how to use my commands please say "train commands" or "bus commands".`
+    `Welcome to DC Metro! I'm able to tell you when the next train or bus is arriving at a station or stop in the Washington DC area. To find out how to use my commands please say 'Train Commands' or 'Bus Commands'.`
   );
 });
 
@@ -409,7 +408,7 @@ app.intent('default_welcome_intent', (conv) => {
  * DiagFlow intent for cancel commands.
  */
 app.intent('goodbye_intent', (conv) => {
-  return conv.close(`Have a good day!`);
+  return conv.close(`Have a good day! If you'd like to talk to me again in the future simply ask your assistant to 'Talk to DC Metro'.`);
 });
 
 exports.dcMetro = functions.https.onRequest(app);
