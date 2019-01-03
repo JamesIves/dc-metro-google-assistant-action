@@ -30,7 +30,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
       ) || null;
 
     if (!stationData) {
-        stationData = stationFuzzySearch(stationName, stations);
+      stationData = stationFuzzySearch(stationName, stations);
     }
 
     if (stationData) {
