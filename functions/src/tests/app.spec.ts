@@ -165,7 +165,7 @@ test('should correctly convert acronyms for station searching', (t: any) => {
   t.end();
 });
 
-test('should correctly stores incidents and the station name as a global variable', (t: any) => {
+test('should correctly store incidents and the station name as a global variable', (t: any) => {
   serviceIncidents.setIncidents({
     data: [
       {name: 'Incident', station: 'U Street'},
