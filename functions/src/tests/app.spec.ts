@@ -6,6 +6,7 @@ import {
   serviceCodesEnum,
   serviceIncidents,
   stationFuzzySearch,
+  getRelevantIncidents,
 } from '../util';
 
 test('should correctly convert the service and line codes', (t: any) => {
@@ -223,7 +224,7 @@ test('should correctly fuzzy match station queries to the correct station', (t: 
       StationTogether1: 'C01',
       StationTogether2: '',
     },
-    'Should match to Mount Vernon'
+    'Should match to Mount Vernon.'
   );
 
   t.deepEquals(
@@ -234,7 +235,7 @@ test('should correctly fuzzy match station queries to the correct station', (t: 
       StationTogether1: 'C01',
       StationTogether2: '',
     },
-    'Should match to Metro Center'
+    'Should match to Metro Center.'
   );
 
   t.deepEquals(
@@ -245,6 +246,185 @@ test('should correctly fuzzy match station queries to the correct station', (t: 
       StationTogether1: 'C01',
       StationTogether2: '',
     },
-    'Should match to GMU'
+    'Should match to GMU.'
+  );
+});
+
+test('should correctly partial match to a station', (t: any) => {
+  t.plan(3);
+  const stationData = {
+    Stations: [
+      {
+        Code: 'A01',
+        Name: 'GMU',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+      {
+        Code: 'A01',
+        Name: 'Metro Center',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+      {
+        Code: 'A01',
+        Name: 'Mt Vernon Sq 7th St-Convention',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+    ],
+  };
+
+  t.deepEquals(
+    stationFuzzySearch('Convention', stationData),
+    {
+      Code: 'A01',
+      Name: 'Mt Vernon Sq 7th St-Convention',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to Mount Vernon.'
+  );
+
+  t.deepEquals(
+    stationFuzzySearch('Center', stationData),
+    {
+      Code: 'A01',
+      Name: 'Metro Center',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to Metro Center.'
+  );
+
+  t.deepEquals(
+    stationFuzzySearch('GMU', stationData),
+    {
+      Code: 'A01',
+      Name: 'GMU',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to GMU.'
+  );
+});
+
+test('should get incidents that are relevant to the lines in the station', (t: any) => {
+  t.plan(3);
+  const incidentData = {
+    Incidents: [
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Red Line: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'RD;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Yellow Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; YL;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Silver Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; SV;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+    ],
+  };
+
+  t.deepEquals(
+    getRelevantIncidents(['RD'], incidentData),
+    [
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Red Line: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'RD;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+    ],
+    'Should get incidents affecting the Red line.'
+  );
+
+  t.deepEquals(
+    getRelevantIncidents(['BL'], incidentData),
+    [
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Yellow Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; YL;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Silver Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; SV;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+    ],
+    'Should get incidents affecting the Blue line.'
+  );
+
+  t.deepEquals(
+    getRelevantIncidents(['SV'], incidentData),
+    [
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Silver Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; SV;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+    ],
+    'Should get incidents affecting the Silver line.'
   );
 });
