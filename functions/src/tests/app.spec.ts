@@ -5,6 +5,7 @@ import {
   lineNamesEnum,
   serviceCodesEnum,
   serviceIncidents,
+  stationFuzzySearch,
 } from '../util';
 
 test('should correctly convert the service and line codes', (t: any) => {
@@ -187,4 +188,63 @@ test('should correctly store incidents and the station name as a global variable
   );
 
   t.end();
+});
+
+test('should correctly fuzzy match station queries to the correct station', (t: any) => {
+  t.plan(3);
+  const stationData = {
+    Stations: [
+      {
+        Code: 'A01',
+        Name: 'GMU',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+      {
+        Code: 'A01',
+        Name: 'Metro Center',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+      {
+        Code: 'A01',
+        Name: 'Mt Vernon Sq 7th St-Convention',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+    ],
+  };
+
+  t.deepEquals(
+    stationFuzzySearch('Mount Vernon', stationData),
+    {
+      Code: 'A01',
+      Name: 'Mt Vernon Sq 7th St-Convention',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to Mount Vernon'
+  );
+
+  t.deepEquals(
+    stationFuzzySearch('Metro', stationData),
+    {
+      Code: 'A01',
+      Name: 'Metro Center',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to Metro Center'
+  );
+
+  t.deepEquals(
+    stationFuzzySearch('George Mason University', stationData),
+    {
+      Code: 'A01',
+      Name: 'GMU',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to GMU'
+  );
 });

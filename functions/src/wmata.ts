@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import fetch from 'node-fetch';
-import {convertStationAcronym} from './util';
+import {stationFuzzySearch} from './util';
 
 export const rootUrl = 'https://api.wmata.com';
 export const wmataApiKey = functions.config().metro.apikey;
@@ -30,15 +30,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
       ) || null;
 
     if (!stationData) {
-      stationName = convertStationAcronym(station).toLowerCase();
-      stationData =
-        stations.Stations.filter((item: {Name: string}) =>
-          stationName.split(' ').every((word) =>
-            convertStationAcronym(item.Name)
-              .toLowerCase()
-              .includes(word)
-          )
-        )[0] || null;
+        stationData = stationFuzzySearch(stationName, stations);
     }
 
     if (stationData) {

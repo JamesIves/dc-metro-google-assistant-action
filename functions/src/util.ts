@@ -81,3 +81,22 @@ export function convertStationAcronym(stationName: string): string {
 
   return result.join(' ').toLowerCase();
 }
+
+/**
+ * Performs a search query which fuzzy matches the query against the data.
+ * @param {string} query - The station name for the search query.
+ * @param {array} stations - An array containing all of the station data.
+ * @returns {array} Returns an array containing the matched data.
+ */
+export function stationFuzzySearch(query: string, stations: any): Array<any> {
+  const stationName = convertStationAcronym(query).toLowerCase();
+  return (
+    stations.Stations.filter((item: {Name: string}) =>
+      stationName.split(' ').every((word) =>
+        convertStationAcronym(item.Name)
+          .toLowerCase()
+          .includes(word)
+      )
+    )[0] || null
+  );
+}
