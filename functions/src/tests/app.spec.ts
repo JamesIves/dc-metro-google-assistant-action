@@ -4,9 +4,13 @@ import {
   convertStationAcronym,
   lineNamesEnum,
   serviceCodesEnum,
+  serviceIncidents,
+  stationFuzzySearch,
+  getRelevantIncidents,
+  sortPredictions,
 } from '../util';
 
-test('should correctly convert the service and line codes', (t) => {
+test('should correctly convert the service and line codes', (t: any) => {
   t.plan(8);
 
   t.equal(
@@ -56,7 +60,7 @@ test('should correctly convert the service and line codes', (t) => {
   t.end();
 });
 
-test('should correctly convert acronyms for station searching', (t) => {
+test('should correctly convert acronyms for station searching', (t: any) => {
   t.plan(17);
 
   t.equal(
@@ -85,7 +89,7 @@ test('should correctly convert acronyms for station searching', (t) => {
 
   t.equal(
     convertStationAcronym('UDC University'),
-    'univeristy of the district of columbia university',
+    'university of the district of columbia university',
     'Should convert UDC to University of the District of Columbia.'
   );
 
@@ -109,8 +113,8 @@ test('should correctly convert acronyms for station searching', (t) => {
 
   t.equal(
     convertStationAcronym('NOMA'),
-    'north of massechusets avenue',
-    'Should convert NOMA to North of Massechusets Avenue.'
+    'north of massachusetts avenue',
+    'Should convert NOMA to North of Massachusetts Avenue.'
   );
 
   t.equal(
@@ -159,6 +163,556 @@ test('should correctly convert acronyms for station searching', (t) => {
     convertStationAcronym('Penn'),
     'pennsylvania',
     'Should convert PENN to Pennsylvania.'
+  );
+
+  t.end();
+});
+
+test('should correctly store incidents and the station name as a global variable', (t: any) => {
+  serviceIncidents.setIncidents({
+    data: [
+      {name: 'Incident', station: 'U Street'},
+      {name: 'Another Incident', station: 'Mount Vernon'},
+    ],
+    station: 'Mount Vernon',
+  });
+
+  t.deepEquals(
+    serviceIncidents.getIncidents(),
+    {
+      data: [
+        {name: 'Incident', station: 'U Street'},
+        {name: 'Another Incident', station: 'Mount Vernon'},
+      ],
+      station: 'Mount Vernon',
+    },
+    'Correctly returns the value that was set.'
+  );
+
+  t.end();
+});
+
+test('should correctly fuzzy match station queries to the correct station', (t: any) => {
+  t.plan(3);
+  const stationData = {
+    Stations: [
+      {
+        Code: 'A01',
+        Name: 'GMU',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+      {
+        Code: 'A01',
+        Name: 'Metro Center',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+      {
+        Code: 'A01',
+        Name: 'Mt Vernon Sq 7th St-Convention',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+    ],
+  };
+
+  t.deepEquals(
+    stationFuzzySearch('Mount Vernon', stationData),
+    {
+      Code: 'A01',
+      Name: 'Mt Vernon Sq 7th St-Convention',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to Mount Vernon.'
+  );
+
+  t.deepEquals(
+    stationFuzzySearch('Metro', stationData),
+    {
+      Code: 'A01',
+      Name: 'Metro Center',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to Metro Center.'
+  );
+
+  t.deepEquals(
+    stationFuzzySearch('George Mason University', stationData),
+    {
+      Code: 'A01',
+      Name: 'GMU',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to GMU.'
+  );
+});
+
+test('should correctly partial match to a station', (t: any) => {
+  t.plan(3);
+  const stationData = {
+    Stations: [
+      {
+        Code: 'A01',
+        Name: 'GMU',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+      {
+        Code: 'A01',
+        Name: 'Metro Center',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+      {
+        Code: 'A01',
+        Name: 'Mt Vernon Sq 7th St-Convention',
+        StationTogether1: 'C01',
+        StationTogether2: '',
+      },
+    ],
+  };
+
+  t.deepEquals(
+    stationFuzzySearch('Convention', stationData),
+    {
+      Code: 'A01',
+      Name: 'Mt Vernon Sq 7th St-Convention',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to Mount Vernon.'
+  );
+
+  t.deepEquals(
+    stationFuzzySearch('Center', stationData),
+    {
+      Code: 'A01',
+      Name: 'Metro Center',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to Metro Center.'
+  );
+
+  t.deepEquals(
+    stationFuzzySearch('GMU', stationData),
+    {
+      Code: 'A01',
+      Name: 'GMU',
+      StationTogether1: 'C01',
+      StationTogether2: '',
+    },
+    'Should match to GMU.'
+  );
+});
+
+test('should get incidents that are relevant to the lines in the station', (t: any) => {
+  t.plan(3);
+  const incidentData = {
+    Incidents: [
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Red Line: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'RD;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Yellow Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; YL;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Silver Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; SV;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+    ],
+  };
+
+  t.deepEquals(
+    getRelevantIncidents(['RD'], incidentData),
+    [
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Red Line: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'RD;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+    ],
+    'Should get incidents affecting the Red line.'
+  );
+
+  t.deepEquals(
+    getRelevantIncidents(['BL'], incidentData),
+    [
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Yellow Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; YL;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Silver Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; SV;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+    ],
+    'Should get incidents affecting the Blue line.'
+  );
+
+  t.deepEquals(
+    getRelevantIncidents(['SV'], incidentData),
+    [
+      {
+        DateUpdated: '2010-07-29T14:21:28',
+        DelaySeverity: null,
+        Description:
+          'Blue & Silver Lines: Expect residual delays to Glenmont due to an earlier signal problem outside Forest Glen.',
+        EmergencyText: null,
+        EndLocationFullName: null,
+        IncidentID: '3754F8B2-A0A6-494E-A4B5-82C9E72DFA74',
+        IncidentType: 'Delay',
+        LinesAffected: 'BL; SV;',
+        PassengerDelay: 0,
+        StartLocationFullName: null,
+      },
+    ],
+    'Should get incidents affecting the Silver line.'
+  );
+});
+
+test('should correctly sort arrival predictions in ascending order', (t) => {
+  const station1 = {
+    Trains: [
+      {
+        Car: '8',
+        Destination: 'Shady Gr',
+        DestinationCode: 'A15',
+        DestinationName: 'Shady Grove',
+        Group: '2',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: 'BRD',
+      },
+      {
+        Car: '8',
+        Destination: 'Glenmont',
+        DestinationCode: 'B11',
+        DestinationName: 'Glenmont',
+        Group: '1',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '1',
+      },
+      {
+        Car: '8',
+        Destination: 'SilvrSpg',
+        DestinationCode: 'B08',
+        DestinationName: 'Silver Spring',
+        Group: '1',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '5',
+      },
+      {
+        Car: '8',
+        Destination: 'Shady Gr',
+        DestinationCode: 'A15',
+        DestinationName: 'Shady Grove',
+        Group: '2',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '5',
+      },
+      {
+        Car: '8',
+        Destination: 'Shady Gr',
+        DestinationCode: 'A15',
+        DestinationName: 'Shady Grove',
+        Group: '2',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '7',
+      },
+      {
+        Car: '8',
+        Destination: 'Glenmont',
+        DestinationCode: 'B11',
+        DestinationName: 'Glenmont',
+        Group: '1',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '9',
+      },
+    ],
+  };
+
+  const station2 = {
+    Trains: [
+      {
+        Car: '8',
+        Destination: 'Largo',
+        DestinationCode: 'G05',
+        DestinationName: 'Largo Town Center',
+        Group: '1',
+        Line: 'SV',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: 'ARR',
+      },
+      {
+        Car: '8',
+        Destination: 'NewCrltn',
+        DestinationCode: 'D13',
+        DestinationName: 'New Carrollton',
+        Group: '1',
+        Line: 'OR',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '3',
+      },
+      {
+        Car: '6',
+        Destination: 'Frnconia',
+        DestinationCode: 'J03',
+        DestinationName: 'Franconia-Springfield',
+        Group: '2',
+        Line: 'BL',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '3',
+      },
+      {
+        Car: '6',
+        Destination: 'Largo',
+        DestinationCode: 'G05',
+        DestinationName: 'Largo Town Center',
+        Group: '1',
+        Line: 'BL',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '5',
+      },
+      {
+        Car: '6',
+        Destination: 'Vienna',
+        DestinationCode: 'K08',
+        DestinationName: 'Vienna/Fairfax-GMU',
+        Group: '2',
+        Line: 'OR',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '6',
+      },
+      {
+        Car: '8',
+        Destination: 'Wiehle',
+        DestinationCode: 'N06',
+        DestinationName: 'Wiehle-Reston East',
+        Group: '2',
+        Line: 'SV',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '12',
+      },
+    ],
+  };
+
+  // Concats the two stations together
+  const stationsTogether = station1.Trains.concat(station2.Trains);
+
+  t.deepEquals(
+    sortPredictions(stationsTogether),
+    [
+      {
+        Car: '8',
+        Destination: 'Largo',
+        DestinationCode: 'G05',
+        DestinationName: 'Largo Town Center',
+        Group: '1',
+        Line: 'SV',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: 'ARR',
+      },
+      {
+        Car: '8',
+        Destination: 'Shady Gr',
+        DestinationCode: 'A15',
+        DestinationName: 'Shady Grove',
+        Group: '2',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: 'BRD',
+      },
+      {
+        Car: '8',
+        Destination: 'Glenmont',
+        DestinationCode: 'B11',
+        DestinationName: 'Glenmont',
+        Group: '1',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '1',
+      },
+      {
+        Car: '8',
+        Destination: 'NewCrltn',
+        DestinationCode: 'D13',
+        DestinationName: 'New Carrollton',
+        Group: '1',
+        Line: 'OR',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '3',
+      },
+      {
+        Car: '6',
+        Destination: 'Frnconia',
+        DestinationCode: 'J03',
+        DestinationName: 'Franconia-Springfield',
+        Group: '2',
+        Line: 'BL',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '3',
+      },
+      {
+        Car: '8',
+        Destination: 'SilvrSpg',
+        DestinationCode: 'B08',
+        DestinationName: 'Silver Spring',
+        Group: '1',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '5',
+      },
+      {
+        Car: '8',
+        Destination: 'Shady Gr',
+        DestinationCode: 'A15',
+        DestinationName: 'Shady Grove',
+        Group: '2',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '5',
+      },
+      {
+        Car: '6',
+        Destination: 'Largo',
+        DestinationCode: 'G05',
+        DestinationName: 'Largo Town Center',
+        Group: '1',
+        Line: 'BL',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '5',
+      },
+      {
+        Car: '6',
+        Destination: 'Vienna',
+        DestinationCode: 'K08',
+        DestinationName: 'Vienna/Fairfax-GMU',
+        Group: '2',
+        Line: 'OR',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '6',
+      },
+      {
+        Car: '8',
+        Destination: 'Shady Gr',
+        DestinationCode: 'A15',
+        DestinationName: 'Shady Grove',
+        Group: '2',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '7',
+      },
+      {
+        Car: '8',
+        Destination: 'Glenmont',
+        DestinationCode: 'B11',
+        DestinationName: 'Glenmont',
+        Group: '1',
+        Line: 'RD',
+        LocationCode: 'A01',
+        LocationName: 'Metro Center',
+        Min: '9',
+      },
+      {
+        Car: '8',
+        Destination: 'Wiehle',
+        DestinationCode: 'N06',
+        DestinationName: 'Wiehle-Reston East',
+        Group: '2',
+        Line: 'SV',
+        LocationCode: 'C01',
+        LocationName: 'Metro Center',
+        Min: '12',
+      },
+    ],
+    'Should correctly sort the stations with strings at the top followed by the numbers in ascending order.'
   );
 
   t.end();
