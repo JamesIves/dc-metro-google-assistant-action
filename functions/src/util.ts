@@ -86,7 +86,7 @@ export function convertStationAcronym(stationName: string): string {
  * Performs a search query which fuzzy matches the query against the data.
  * @param {string} query - The station name for the search query.
  * @param {array} stations - An array containing all of the station data.
- * @returns {array} Returns an array containing the matched data.
+ * @returns {array} Returns an array containing the matched data if it exists.
  */
 export function stationFuzzySearch(query: string, stations: any): Array<any> {
   const stationName = convertStationAcronym(query).toLowerCase();
@@ -99,4 +99,43 @@ export function stationFuzzySearch(query: string, stations: any): Array<any> {
       )
     )[0] || null
   );
+}
+
+/**
+ * Performs a search query which partial matches the query against the data.
+ * @param {string} query - The station name for the search query.
+ * @param {array} stations - An array containing all of the station data.
+ * @returns {array} Returns an array containing the matched data if it exists.
+ */
+export function stationPartialSearch(query: string, stations: any): Array<any> {
+  return (
+    stations.Stations.find(
+      (item: {Name: {toLowerCase: () => {includes: (arg0: string) => void}}}) =>
+        item.Name.toLowerCase().includes(query)
+    ) || null
+  );
+}
+
+/**
+ * Filters incident data and returns a set of incidents which are relevant to the station.
+ * @param {array} lines - An array of lines which the station has, for example ['RD', 'BL', 'SV'].
+ * @param {array} incidents - An array containing all of the incident data.
+ * @returns {array} Returns an array containing the matched incidents if they exist.
+ */
+export function getRelevantIncidents(
+  lines: Array<string>,
+  incidents: any
+): Array<object> {
+  return incidents.Incidents.reduce((incidents: any, current: any) => {
+    const linesAffected = current.LinesAffected.split(/;[\s]?/).filter(
+      (code: string) => code !== ''
+    );
+    lines.map((line) => {
+      if (linesAffected.includes(line)) {
+        incidents.push(current);
+      }
+    });
+
+    return incidents;
+  }, []);
 }

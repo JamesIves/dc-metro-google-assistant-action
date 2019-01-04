@@ -146,7 +146,7 @@ app.intent(
             ) &&
             timetableCells.length >= 2
           ) {
-            return conv.ask(
+            conv.ask(
               new SimpleResponse({
                 speech: `The train after that is a ${
                   lineNamesEnum[timetable.predictions[1].Line]
@@ -183,7 +183,9 @@ app.intent(
             /* Sets the conversation context with a lifespan of one input.
               This occurs so the user can say 'yes' to trigger the incidents intent, but only when prompted. */
             conv.contexts.set('station_incidents_present', 1);
+
             new Suggestions(['Yes', 'No']);
+
             return conv.ask(
               timetable.incidents.length == 1
                 ? `There is an incident affecting the lines which service this station. Would you like to know about it?`
