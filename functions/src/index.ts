@@ -184,8 +184,6 @@ app.intent(
               This occurs so the user can say 'yes' to trigger the incidents intent, but only when prompted. */
             conv.contexts.set('station_incidents_present', 1);
 
-            new Suggestions(['Yes', 'No']);
-
             return conv.ask(
               timetable.incidents.length == 1
                 ? `There is an incident affecting the lines which service this station. Would you like to know about it?`
@@ -290,7 +288,7 @@ app.intent(
             ) &&
             timetableCells.length >= 2
           ) {
-            return conv.ask(
+            conv.ask(
               new SimpleResponse({
                 speech: `The bus after that is bound for ${
                   timetable.Predictions[1].DirectionText
