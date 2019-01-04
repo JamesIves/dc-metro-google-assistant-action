@@ -174,7 +174,7 @@ app.intent(
             );
           }
 
-          if (timetable.incidents.length > 0) {
+          if (timetable.incidents && timetable.incidents.length > 0) {
             serviceIncidents.setIncidents({
               data: timetable.incidents,
               station: timetable.stationName,
