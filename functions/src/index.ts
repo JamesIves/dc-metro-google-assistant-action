@@ -79,6 +79,22 @@ app.intent(
                   : timetable.predictions[0].Min === 'BRD'
                   ? `It's boarding now. `
                   : `It arrives in ${timetable.predictions[0].Min} minutes. `
+              } ${
+                timetableCells.length >= 2
+                  ? `The train after that is a ${
+                      lineNamesEnum[timetable.predictions[1].Line]
+                    } line train and has a final calling point at ${
+                      timetable.predictions[1].Destination
+                    }. ${
+                      timetable.predictions[1].Min === 'ARR'
+                        ? `It's arriving now.`
+                        : timetable.predictions[1].Min === 'BRD'
+                        ? `It's boarding now.`
+                        : `It arrives in ${
+                            timetable.predictions[1].Min
+                          } minutes.`
+                    }`
+                  : ''
               }`,
               text: `The next train arriving at ${timetable.stationName} is a ${
                 lineNamesEnum[timetable.predictions[0].Line]
@@ -89,7 +105,23 @@ app.intent(
                   ? `It's arriving now.`
                   : timetable.predictions[0].Min === 'BRD'
                   ? `It's boarding now.`
-                  : `It arrives in ${timetable.predictions[0].Min} minutes.`
+                  : `It arrives in ${timetable.predictions[0].Min} minutes. ${
+                      timetableCells.length >= 2
+                        ? `The train after that is a ${
+                            lineNamesEnum[timetable.predictions[1].Line]
+                          } line train and has a final calling point at ${
+                            timetable.predictions[1].Destination
+                          }. ${
+                            timetable.predictions[1].Min === 'ARR'
+                              ? `It's arriving now. `
+                              : timetable.predictions[1].Min === 'BRD'
+                              ? `It's boarding now. `
+                              : `It arrives in ${
+                                  timetable.predictions[1].Min
+                                } minutes. `
+                          }`
+                        : ''
+                    }`
               }`,
             })
           );
@@ -136,40 +168,6 @@ app.intent(
                 name: 'Report Issues',
                 url:
                   'https://github.com/JamesIves/dc-metro-google-assistant-action/issues',
-              })
-            );
-          }
-
-          if (
-            !conv.surface.capabilities.has(
-              'actions.capability.SCREEN_OUTPUT'
-            ) &&
-            timetableCells.length >= 2
-          ) {
-            conv.ask(
-              new SimpleResponse({
-                speech: `The train after that is a ${
-                  lineNamesEnum[timetable.predictions[1].Line]
-                } line train and has a final calling point at ${
-                  timetable.predictions[1].Destination
-                }. ${
-                  timetable.predictions[1].Min === 'ARR'
-                    ? `It's arriving now.`
-                    : timetable.predictions[1].Min === 'BRD'
-                    ? `It's boarding now.`
-                    : `It arrives in ${timetable.predictions[1].Min} minutes.`
-                }`,
-                text: `The train after that is a ${
-                  lineNamesEnum[timetable.predictions[1].Line]
-                } line train and has a final calling point at ${
-                  timetable.predictions[1].Destination
-                }. ${
-                  timetable.predictions[1].Min === 'ARR'
-                    ? `It's arriving now. `
-                    : timetable.predictions[1].Min === 'BRD'
-                    ? `It's boarding now. `
-                    : `It arrives in ${timetable.predictions[1].Min} minutes. `
-                }`,
               })
             );
           }
