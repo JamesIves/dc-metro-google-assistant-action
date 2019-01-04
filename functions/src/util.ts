@@ -88,7 +88,7 @@ export function convertStationAcronym(stationName: string): string {
  * @param {array} stations - An array containing all of the station data.
  * @returns {array} Returns an array containing the matched data if it exists.
  */
-export function stationFuzzySearch(query: string, stations: any): Array<any> {
+export function stationFuzzySearch(query: string, stations: any): any {
   const stationName = convertStationAcronym(query).toLowerCase();
   return (
     stations.Stations.filter((item: {Name: string}) =>
@@ -107,7 +107,7 @@ export function stationFuzzySearch(query: string, stations: any): Array<any> {
  * @param {array} stations - An array containing all of the station data.
  * @returns {array} Returns an array containing the matched data if it exists.
  */
-export function stationPartialSearch(query: string, stations: any): Array<any> {
+export function stationPartialSearch(query: string, stations: any): any {
   return (
     stations.Stations.find(
       (item: {Name: {toLowerCase: () => {includes: (arg0: string) => void}}}) =>
@@ -125,7 +125,7 @@ export function stationPartialSearch(query: string, stations: any): Array<any> {
 export function getRelevantIncidents(
   lines: Array<string>,
   incidents: any
-): Array<object> {
+): any {
   return incidents.Incidents.reduce((incidents: any, current: any) => {
     const linesAffected = current.LinesAffected.split(/;[\s]?/).filter(
       (code: string) => code !== ''

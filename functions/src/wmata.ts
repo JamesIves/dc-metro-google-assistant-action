@@ -90,7 +90,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         lines.push(stationData.LineCode4);
       }
 
-      const incidentData = await fetchTrainIncidents(lines);
+      const incidentData = await fetchTrainIncidents();
       const incidents = await getRelevantIncidents(lines, incidentData);
 
       return {
