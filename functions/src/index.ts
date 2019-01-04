@@ -73,7 +73,10 @@ app.intent(
                   ? `It's boarding now. `
                   : `It arrives in ${timetable.predictions[0].Min} minutes. `
               } ${
-                timetableCells.length >= 2
+                timetableCells.length >= 2 &&
+                !conv.surface.capabilities.has(
+                  'actions.capability.SCREEN_OUTPUT'
+                )
                   ? `The train after that is a ${
                       lineNamesEnum[timetable.predictions[1].Line]
                     } line train and has a final calling point at ${
@@ -99,7 +102,10 @@ app.intent(
                   : timetable.predictions[0].Min === 'BRD'
                   ? `It's boarding now.`
                   : `It arrives in ${timetable.predictions[0].Min} minutes. ${
-                      timetableCells.length >= 2
+                      timetableCells.length >= 2 &&
+                      !conv.surface.capabilities.has(
+                        'actions.capability.SCREEN_OUTPUT'
+                      )
                         ? `The train after that is a ${
                             lineNamesEnum[timetable.predictions[1].Line]
                           } line train and has a final calling point at ${
