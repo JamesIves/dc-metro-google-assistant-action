@@ -43,21 +43,14 @@ app.intent(
       } else {
         // Generates the neccersary table cells for display devices.
         const timetableCells = timetable.predictions.map(
-          (item: {
-            Line: string | number,
-            Destination: any,
-            Car: any,
-            Min: any,
-          }) => {
-            return {
-              cells: [
-                lineNamesEnum[item.Line] || 'TBD',
-                item.Destination || 'TDB',
-                item.Car || 'TBD',
-                convertCode(item.Min || 'TBD', serviceCodesEnum),
-              ],
-            };
-          }
+          (item: {Line: string, Destination: any, Car: any, Min: any}) => ({
+            cells: [
+              lineNamesEnum[item.Line] || 'TBD',
+              item.Destination || 'TDB',
+              item.Car || 'TBD',
+              convertCode(item.Min || 'TBD', serviceCodesEnum),
+            ],
+          })
         );
 
         if (!timetableCells.length) {
