@@ -1,4 +1,4 @@
-# DC Metro Google Action 🚉 🔉
+# DC Metro Google Assistant Action 🚉 🔉
 
 [![CircleCI](https://circleci.com/gh/JamesIves/dc-metro-google-assistant-action/tree/master.svg?style=svg)](https://circleci.com/gh/JamesIves/dc-metro-google-assistant-action/tree/master) [![Issues](https://img.shields.io/github/issues/JamesIves/dc-metro-google-assistant-action.svg)](https://github.com/JamesIves/dc-metro-google-assistant-action/issues)
 
