@@ -4,6 +4,7 @@ import {
   stationFuzzySearch,
   stationPartialSearch,
   getRelevantIncidents,
+  sortPredictions,
 } from './util';
 
 export const rootUrl = 'https://api.wmata.com';
@@ -55,11 +56,9 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
 
         const predictionObjMulti = await predictionResponseMulti.json();
 
-        predictionObj.Trains = predictionObj.Trains.concat(
-          predictionObjMulti.Trains
-        )
-          .sort((a: {Min: number}, b: {Min: number}) => a.Min - b.Min)
-          .reverse();
+        predictionObj.Trains = sortPredictions(
+          predictionObj.Trains.concat(predictionObjMulti.Trains)
+        );
       }
 
       /* Inbound trains which do not accept passengers are listed as 'No' and 'None' in the WMATA API.
@@ -75,9 +74,11 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         Checks all 4 and adds them to an array. This is later used to figure out if there's any
         disruptions occurring at the station that is requested. */
       const lines = [];
+
       if (stationData.LineCode1 !== null) {
         lines.push(stationData.LineCode1);
       }
+
       if (stationData.LineCode2 !== null) {
         lines.push(stationData.lineCode2);
       }

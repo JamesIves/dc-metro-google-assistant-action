@@ -126,7 +126,7 @@ export function getRelevantIncidents(
   lines: Array<string>,
   incidents: any
 ): any {
-  return incidents.Incidents.reduce((incidents: any, current: any) => {
+  return incidents.Incidents.reduce((incidents: any, current: any): any => {
     const linesAffected = current.LinesAffected.split(/;[\s]?/).filter(
       (code: string) => code !== ''
     );
@@ -138,4 +138,20 @@ export function getRelevantIncidents(
 
     return incidents;
   }, []);
+}
+
+/**
+ * Sorts arrival predictions into ascending order. Used primarily when combining stations with multiple platforms.
+ * @param {array} predictions - An array containing a list of unsorted arrival predictions.
+ * @returns {array} Returns an array containing the sorted arrival predictions.
+ */
+export function sortPredictions(predictions: Array<any>): Array<any> {
+  return predictions
+    .sort((a: {Min: number}, b: {Min: number}) => a.Min - b.Min)
+    .reduce((acc: any, element: {Min: number}) => {
+      if (isNaN(element.Min)) {
+        return [element, ...acc];
+      }
+      return [...acc, element];
+    }, []);
 }
