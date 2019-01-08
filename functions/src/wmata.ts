@@ -91,7 +91,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         lines.push(stationData.LineCode4);
       }
 
-      const incidentData = await fetchTrainIncidents();
+      const incidentData = await fetchIncidents('train');
       const incidents = await getRelevantIncidents(lines, incidentData);
 
       return {
@@ -120,7 +120,20 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
       `${rootUrl}/NextBusService.svc/json/jPredictions?StopID=${sanitizedStopId}&api_key=${wmataApiKey}`,
       {method: 'GET'}
     );
-    return await predictionResponse.json();
+    const predictionObj = await predictionResponse.json();
+
+    const incidentData = await fetchIncidents('bus');
+    
+    // TODO: Need to pick out route id's from the incident data and create a function that hands it back
+    const incidents = await getRelevantBusIncidents();
+
+
+    // TODO: Return all of the data I need, similar payload to the rail data
+    return {
+      stopName: predictionObj.StopName,
+      predictions: predictionObj.Predictions,
+      incidents
+    }
   } catch (error) {
     return [];
   }
@@ -128,12 +141,19 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
 
 /**
  * Fetches all incidents which are currently affecting the Metro.
+ * @param {string} transport - The mode of transport, either 'train' or 'bus'.
  * @returns {Promise} Returns a promise.
  */
-export const fetchTrainIncidents = async (): Promise<object> => {
+export const fetchIncidents = async (transport: string): Promise<object> => {
   try {
     const incidentResponse = await fetch(
-      `${rootUrl}/Incidents.svc/json/Incidents?api_key=${wmataApiKey}`,
+      `${rootUrl}/Incidents.svc/json/${
+        transport === 'train'
+          ? 'Incidents'
+          : transport === 'bus'
+          ? 'BusIncidents'
+          : ''
+      }?api_key=${wmataApiKey}`,
       {method: 'GET'}
     );
 
