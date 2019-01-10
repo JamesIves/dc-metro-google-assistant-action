@@ -182,7 +182,7 @@ app.intent(
             conv.contexts.set('station_incidents_present', 1);
 
             return conv.ask(
-              timetable.incidents.length == 1
+              timetable.incidents.length === 1
                 ? `There is an incident affecting the lines which service this station. Would you like to know about it?`
                 : `There are ${
                     timetable.incidents.length

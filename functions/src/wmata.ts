@@ -11,6 +11,30 @@ export const rootUrl = 'https://api.wmata.com';
 export const wmataApiKey = functions.config().metro.apikey;
 
 /**
+ * Fetches all incidents which are currently affecting the Metro.
+ * @param {string} transport - The mode of transport, either 'train' or 'bus'.
+ * @returns {Promise} Returns a promise.
+ */
+export const fetchIncidents = async (transport: string): Promise<object> => {
+  try {
+    const incidentResponse = await fetch(
+      `${rootUrl}/Incidents.svc/json/${
+        transport === 'train'
+          ? 'Incidents'
+          : transport === 'bus'
+          ? 'BusIncidents'
+          : ''
+      }?api_key=${wmataApiKey}`,
+      {method: 'GET'}
+    );
+
+    return await incidentResponse.json();
+  } catch (error) {
+    return [];
+  }
+};
+
+/**
  * Accepts a station name and returns a list of prediction results.
  * @param {string} station - The name of the train station.
  * @returns {Promise} Returns a promise.
@@ -26,7 +50,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
     /* The station code is required for the secondary API call. First we check to see if we can find
       an exact match on the station name with an array find. If not the net is set wider and a fuzzy match filter
       is performed. */
-    let stationName = station.toLowerCase();
+    const stationName = station.toLowerCase();
     let stationData = stationPartialSearch(stationName, stations);
 
     if (!stationData) {
@@ -41,7 +65,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         {method: 'GET'}
       );
 
-      let predictionObj = await predictionResponse.json();
+      const predictionObj = await predictionResponse.json();
 
       if (stationData.StationTogether1) {
         /* Some stations have multiple platforms, and the station code for these get stored in the
@@ -134,30 +158,6 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
       predictions: predictionObj.Predictions,
       incidents
     }
-  } catch (error) {
-    return [];
-  }
-};
-
-/**
- * Fetches all incidents which are currently affecting the Metro.
- * @param {string} transport - The mode of transport, either 'train' or 'bus'.
- * @returns {Promise} Returns a promise.
- */
-export const fetchIncidents = async (transport: string): Promise<object> => {
-  try {
-    const incidentResponse = await fetch(
-      `${rootUrl}/Incidents.svc/json/${
-        transport === 'train'
-          ? 'Incidents'
-          : transport === 'bus'
-          ? 'BusIncidents'
-          : ''
-      }?api_key=${wmataApiKey}`,
-      {method: 'GET'}
-    );
-
-    return await incidentResponse.json();
   } catch (error) {
     return [];
   }
