@@ -13,6 +13,12 @@ export const serviceIncidents = {
   getIncidents: () => serviceIncidentsObj.incidents,
 };
 
+/** Enum containing all of the service types the action supports. */
+export const serviceTypeEnum = {
+  TRAIN: 'train',
+  BUS: 'bus',
+}
+
 /** Enum containing all of the line names on the DC Metro. */
 export const lineNamesEnum = {
   RD: 'Red',
@@ -27,6 +33,7 @@ export const lineNamesEnum = {
 export const serviceCodesEnum = {
   ARR: 'Arriving',
   BRD: 'Boarding',
+  DLY:  'Delayed'
 };
 
 /** Enum containing all station acronyms and their matching string. */

@@ -5,6 +5,7 @@ import {
   stationPartialSearch,
   getRelevantIncidents,
   sortPredictions,
+  serviceTypeEnum,
 } from './util';
 
 export const rootUrl = 'https://api.wmata.com';
@@ -115,7 +116,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         lines.push(stationData.LineCode4);
       }
 
-      const incidentData = await fetchIncidents('train');
+      const incidentData = await fetchIncidents(serviceTypeEnum.TRAIN);
       const incidents = await getRelevantIncidents(lines, incidentData);
 
       return {
@@ -146,7 +147,7 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
     );
     const predictionObj = await predictionResponse.json();
 
-    const incidentData = await fetchIncidents('bus');
+    const incidentData = await fetchIncidents(serviceTypeEnum.BUS);
     
     // TODO: Need to pick out route id's from the incident data and create a function that hands it back
     const incidents = await getRelevantBusIncidents();
