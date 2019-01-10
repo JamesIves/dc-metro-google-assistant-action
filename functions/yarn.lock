@@ -1022,10 +1022,10 @@ finalhandler@1.1.1:
     statuses "~1.4.0"
     unpipe "~1.0.0"
 
-firebase-admin@^6.4.0:
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/firebase-admin/-/firebase-admin-6.4.0.tgz#55c288f4e324bc89174bad39735c78475eae7235"
-  integrity sha512-sqRfD4UbDA9r1tX/TPbtpYhcajLr+APqlNps7HrFfrqYBfNXLkkZbnx6Bbbbii3XPJZ5Dcwfl9saxHahsLkpCw==
+firebase-admin@^6.5.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/firebase-admin/-/firebase-admin-6.5.0.tgz#61954e57f595850af184c6eafad9612c2aa196bc"
+  integrity sha512-0ejmbmx8VCjVCZVxpvVckDqFOULEL455eNtyJOGag4QmCE8n89J5X9GhR027mdHis5mpIiGJtnqpe6jO3E6QZA==
   dependencies:
     "@firebase/app" "^0.3.4"
     "@firebase/database" "^0.3.6"
