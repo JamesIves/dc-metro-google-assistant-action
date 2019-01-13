@@ -11,7 +11,7 @@ jobs:
             - v1-dependencies-
  
       - run:
-          name: Install Dependencies
+          name: Installing Dependencies
           working_directory: ~/project/functions
           command: yarn install
 

@@ -160,7 +160,7 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
       return {
         stopName: predictionObj.StopName,
         predictions: predictionObj.Predictions,
-        incidents,
+        incidents
       };
     } else {
       return null;
