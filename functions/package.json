@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@types/tape": "^4.2.33",
+    "prettier": "^1.15.3",
     "ts-node": "7.0.1",
     "tslint": "~5.12.1",
     "typescript": "~3.2.2"
@@ -37,8 +38,14 @@
   },
   "keywords": [
     "dc-metro",
+    "district-of-columbia",
+    "metro",
+    "train",
+    "bus",
+    "dc",
     "washington-dc",
     "google-assistant",
+    "google",
     "civic"
   ],
   "bugs": {
