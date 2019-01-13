@@ -3,7 +3,8 @@ import fetch from 'node-fetch';
 import {
   stationFuzzySearch,
   stationPartialSearch,
-  getRelevantIncidents,
+  getRelevantTrainIncidents,
+  getRelevantBusIncidents,
   sortPredictions,
   serviceTypeEnum,
 } from './util';
@@ -117,7 +118,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
       }
 
       const incidentData = await fetchIncidents(serviceTypeEnum.TRAIN);
-      const incidents = await getRelevantIncidents(lines, incidentData);
+      const incidents = await getRelevantTrainIncidents(lines, incidentData);
 
       return {
         stationName: stationData.Name,
@@ -147,17 +148,22 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
     );
     const predictionObj = await predictionResponse.json();
 
-    const incidentData = await fetchIncidents(serviceTypeEnum.BUS);
-    
-    // TODO: Need to pick out route id's from the incident data and create a function that hands it back
-    const incidents = await getRelevantBusIncidents();
+    if (predictionObj) {
+      const incidentData = await fetchIncidents(serviceTypeEnum.BUS);
 
+      /* Gets a list of all routes that are due to stop at this stop. */
+      const routes = predictionObj.Predictions.map(
+        (prediction: {RouteID: any}) => prediction.RouteID
+      );
+      const incidents = await getRelevantBusIncidents(routes, incidentData);
 
-    // TODO: Return all of the data I need, similar payload to the rail data
-    return {
-      stopName: predictionObj.StopName,
-      predictions: predictionObj.Predictions,
-      incidents
+      return {
+        stopName: predictionObj.StopName,
+        predictions: predictionObj.Predictions,
+        incidents,
+      };
+    } else {
+      return null;
     }
   } catch (error) {
     return [];

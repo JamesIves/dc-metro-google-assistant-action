@@ -1,14 +1,15 @@
 /** Object which contains all incidents so it can be passed back and forth between intents. */
 export const serviceIncidentsObj = {
   incidents: {
-    station: null,
+    name: null,
+    type: null,
     data: [],
   },
 };
 
 /** Sets/Fetches service incidents for intent pass backs. */
 export const serviceIncidents = {
-  setIncidents: (incidents: {station: any, data: any[]}) =>
+  setIncidents: (incidents: {name: any, type: any, data: any[]}) =>
     (serviceIncidentsObj.incidents = incidents),
   getIncidents: () => serviceIncidentsObj.incidents,
 };
@@ -17,7 +18,7 @@ export const serviceIncidents = {
 export const serviceTypeEnum = {
   TRAIN: 'train',
   BUS: 'bus',
-}
+};
 
 /** Enum containing all of the line names on the DC Metro. */
 export const lineNamesEnum = {
@@ -33,7 +34,7 @@ export const lineNamesEnum = {
 export const serviceCodesEnum = {
   ARR: 'Arriving',
   BRD: 'Boarding',
-  DLY:  'Delayed'
+  DLY: 'Delayed',
 };
 
 /** Enum containing all station acronyms and their matching string. */
@@ -124,27 +125,55 @@ export function stationPartialSearch(query: string, stations: any): any {
 }
 
 /**
- * Filters incident data and returns a set of incidents which are relevant to the station.
+ * Filters train incident data and returns a set of incidents which are relevant to the station.
  * @param {array} lines - An array of lines which the station has, for example ['RD', 'BL', 'SV'].
  * @param {array} incidents - An array containing all of the incident data.
  * @returns {array} Returns an array containing the matched incidents if they exist.
  */
-export function getRelevantIncidents(
+export function getRelevantTrainIncidents(
   lines: Array<string>,
   incidents: any
 ): any {
-  return incidents.Incidents.reduce((incidents: any, current: any): any => {
-    const linesAffected = current.LinesAffected.split(/;[\s]?/).filter(
-      (code: string) => code !== ''
-    );
-    lines.map((line) => {
-      if (linesAffected.includes(line)) {
-        incidents.push(current);
-      }
-    });
+  return incidents.Incidents.reduce(
+    (incidentData: any[], current: any): any => {
+      const linesAffected = current.LinesAffected.split(/;[\s]?/).filter(
+        (code: string) => code !== ''
+      );
+      lines.map((line) => {
+        if (linesAffected.includes(line)) {
+          incidentData.push(current);
+        }
+      });
 
-    return incidents;
-  }, []);
+      return incidentData;
+    },
+    []
+  );
+}
+
+/**
+ * Filters bus incident data and returns a set of incidents which are relevant to the bus stop.
+ * @param {array} routes - An array of routes which arrive at this stop. For example ['ABC', 'EFG']
+ * @param {array} incidents - An array containing all of the incident data.
+ * @returns {array} Returns an array containing the matched incidents if they exist.
+ */
+export function getRelevantBusIncidents(
+  routes: Array<string>,
+  incidents: any
+): any {
+  return incidents.BusIncidents.reduce(
+    (incidentData: any[], current: any): any => {
+      const routesAffected = current.RoutesAffected;
+      routes.map((route) => {
+        if (routesAffected.includes(route)) {
+          incidentData.push(current);
+        }
+      });
+
+      return incidentData;
+    },
+    []
+  );
 }
 
 /**

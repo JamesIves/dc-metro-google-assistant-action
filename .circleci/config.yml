@@ -11,6 +11,7 @@ jobs:
             - v1-dependencies-
  
       - run:
+          name: Install Dependencies
           working_directory: ~/project/functions
           command: yarn install
 
@@ -20,5 +21,11 @@ jobs:
           key: v1-dependencies-{{ checksum "./functions/package.json" }}
 
       - run:
+          name: Linting Build
+          working_directory: ~/project/functions
+          command: yarn lint
+
+      - run:
+          name: Running Tests
           working_directory: ~/project/functions
           command: yarn test

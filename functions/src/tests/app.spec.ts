@@ -6,7 +6,8 @@ import {
   serviceCodesEnum,
   serviceIncidents,
   stationFuzzySearch,
-  getRelevantIncidents,
+  getRelevantTrainIncidents,
+  getRelevantBusIncidents,
   sortPredictions,
 } from '../util';
 
@@ -174,7 +175,8 @@ test('should correctly store incidents and the station name as a global variable
       {name: 'Incident', station: 'U Street'},
       {name: 'Another Incident', station: 'Mount Vernon'},
     ],
-    station: 'Mount Vernon',
+    name: 'Mount Vernon',
+    type: 'station',
   });
 
   t.deepEquals(
@@ -184,7 +186,8 @@ test('should correctly store incidents and the station name as a global variable
         {name: 'Incident', station: 'U Street'},
         {name: 'Another Incident', station: 'Mount Vernon'},
       ],
-      station: 'Mount Vernon',
+      name: 'Mount Vernon',
+      type: 'station',
     },
     'Correctly returns the value that was set.'
   );
@@ -310,7 +313,7 @@ test('should correctly partial match to a station', (t: any) => {
   );
 });
 
-test('should get incidents that are relevant to the lines in the station', (t: any) => {
+test('should get incidents that are relevant to the train lines in the station', (t: any) => {
   t.plan(3);
   const incidentData = {
     Incidents: [
@@ -357,7 +360,7 @@ test('should get incidents that are relevant to the lines in the station', (t: a
   };
 
   t.deepEquals(
-    getRelevantIncidents(['RD'], incidentData),
+    getRelevantTrainIncidents(['RD'], incidentData),
     [
       {
         DateUpdated: '2010-07-29T14:21:28',
@@ -377,7 +380,7 @@ test('should get incidents that are relevant to the lines in the station', (t: a
   );
 
   t.deepEquals(
-    getRelevantIncidents(['BL'], incidentData),
+    getRelevantTrainIncidents(['BL'], incidentData),
     [
       {
         DateUpdated: '2010-07-29T14:21:28',
@@ -410,7 +413,7 @@ test('should get incidents that are relevant to the lines in the station', (t: a
   );
 
   t.deepEquals(
-    getRelevantIncidents(['SV'], incidentData),
+    getRelevantTrainIncidents(['SV'], incidentData),
     [
       {
         DateUpdated: '2010-07-29T14:21:28',
@@ -427,6 +430,99 @@ test('should get incidents that are relevant to the lines in the station', (t: a
       },
     ],
     'Should get incidents affecting the Silver line.'
+  );
+});
+
+test('should get incidents that are relevant to the train lines in the station', (t: any) => {
+  t.plan(3);
+  const incidentData = {
+    BusIncidents: [
+      {
+        DateUpdated: '2014-10-28T08:13:03',
+        Description:
+          '90, 92, X1, X2, X9: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
+        IncidentID: '32297013-57B6-467F-BC6B-93DFA4115652',
+        IncidentType: 'Delay',
+        RoutesAffected: ['90', '92', 'X1', 'X2', 'X9'],
+      },
+      {
+        DateUpdated: '2014-10-28T08:13:03',
+        Description:
+          'PQ: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
+        IncidentID: '32297013-57B6-467F-BC6B-93DFA41156523',
+        IncidentType: 'Delay',
+        RoutesAffected: ['PQ'],
+      },
+      {
+        DateUpdated: '2014-10-28T08:13:03',
+        Description:
+          'JI: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
+        IncidentID: '2322970213-57B6-467F-BC6B-93DFA41156523',
+        IncidentType: 'Delay',
+        RoutesAffected: ['JI'],
+      },
+    ],
+  };
+
+  t.deepEquals(
+    getRelevantBusIncidents(['X2'], incidentData),
+    [
+      {
+        DateUpdated: '2014-10-28T08:13:03',
+        Description:
+          '90, 92, X1, X2, X9: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
+        IncidentID: '32297013-57B6-467F-BC6B-93DFA4115652',
+        IncidentType: 'Delay',
+        RoutesAffected: ['90', '92', 'X1', 'X2', 'X9'],
+      },
+    ],
+    'Should get incidents affecting X2 route.'
+  );
+
+  t.deepEquals(
+    getRelevantBusIncidents(['PQ', '92'], incidentData),
+    [
+      {
+        DateUpdated: '2014-10-28T08:13:03',
+        Description:
+          '90, 92, X1, X2, X9: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
+        IncidentID: '32297013-57B6-467F-BC6B-93DFA4115652',
+        IncidentType: 'Delay',
+        RoutesAffected: ['90', '92', 'X1', 'X2', 'X9'],
+      },
+      {
+        DateUpdated: '2014-10-28T08:13:03',
+        Description:
+          'PQ: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
+        IncidentID: '32297013-57B6-467F-BC6B-93DFA41156523',
+        IncidentType: 'Delay',
+        RoutesAffected: ['PQ'],
+      },
+    ],
+    'Should get incidents affecting PQ and 92 route.'
+  );
+
+  t.deepEquals(
+    getRelevantBusIncidents(['JI', 'PQ'], incidentData),
+    [
+      {
+        DateUpdated: '2014-10-28T08:13:03',
+        Description:
+          'PQ: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
+        IncidentID: '32297013-57B6-467F-BC6B-93DFA41156523',
+        IncidentType: 'Delay',
+        RoutesAffected: ['PQ'],
+      },
+      {
+        DateUpdated: '2014-10-28T08:13:03',
+        Description:
+          'JI: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
+        IncidentID: '2322970213-57B6-467F-BC6B-93DFA41156523',
+        IncidentType: 'Delay',
+        RoutesAffected: ['JI'],
+      },
+    ],
+    'Should get incidents affecting JI and PQ route.'
   );
 });
 
