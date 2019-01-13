@@ -7,12 +7,8 @@ import {
   Suggestions,
   LinkOutSuggestion,
 } from 'actions-on-google';
-import {
-  lineNamesEnum,
-  serviceCodesEnum,
-  convertCode,
-  serviceIncidents,
-} from './util';
+import {lineNamesEnum, serviceCodesEnum, convertCode} from './util/constants';
+import {serviceIncidents} from './util/incidents';
 import {fetchTrainTimetable, fetchBusTimetable} from './wmata';
 
 const app = dialogflow({debug: true});

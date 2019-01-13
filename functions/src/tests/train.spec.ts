@@ -1,65 +1,12 @@
 import * as test from 'tape';
 import {
-  convertCode,
+  combineLineCodes,
   convertStationAcronym,
-  lineNamesEnum,
-  serviceCodesEnum,
-  serviceIncidents,
   stationFuzzySearch,
+  stationPartialSearch,
   getRelevantTrainIncidents,
-  getRelevantBusIncidents,
   sortPredictions,
-} from '../util';
-
-test('should correctly convert the service and line codes', (t: any) => {
-  t.plan(8);
-
-  t.equal(
-    convertCode('ARR', serviceCodesEnum),
-    'Arriving',
-    'Should convert ARR to Arriving.'
-  );
-
-  t.equal(
-    convertCode('BRD', serviceCodesEnum),
-    'Boarding',
-    'Should convert BRD to Boarding.'
-  );
-
-  t.equal(convertCode('RD', lineNamesEnum), 'Red', 'Should convert RD to Red.');
-
-  t.equal(
-    convertCode('BL', lineNamesEnum),
-    'Blue',
-    'Should convert BL to Blue.'
-  );
-
-  t.equal(
-    convertCode('YL', lineNamesEnum),
-    'Yellow',
-    'Should convert YL to Yellow.'
-  );
-
-  t.equal(
-    convertCode('OR', lineNamesEnum),
-    'Orange',
-    'Should convert OR to Orange.'
-  );
-
-  t.equal(
-    convertCode('SV', lineNamesEnum),
-    'Silver',
-    'Should convert SV to Silver.'
-  );
-
-  t.equal(
-    convertCode('GR', lineNamesEnum),
-    'Green',
-    'Should convert Gr to Green.'
-  );
-
-  t.end();
-});
+} from '../util/train';
 
 test('should correctly convert acronyms for station searching', (t: any) => {
   t.plan(17);
@@ -169,35 +116,9 @@ test('should correctly convert acronyms for station searching', (t: any) => {
   t.end();
 });
 
-test('should correctly store incidents and the station name as a global variable', (t: any) => {
-  serviceIncidents.setIncidents({
-    data: [
-      {name: 'Incident', station: 'U Street'},
-      {name: 'Another Incident', station: 'Mount Vernon'},
-    ],
-    name: 'Mount Vernon',
-    type: 'station',
-  });
-
-  t.deepEquals(
-    serviceIncidents.getIncidents(),
-    {
-      data: [
-        {name: 'Incident', station: 'U Street'},
-        {name: 'Another Incident', station: 'Mount Vernon'},
-      ],
-      name: 'Mount Vernon',
-      type: 'station',
-    },
-    'Correctly returns the value that was set.'
-  );
-
-  t.end();
-});
-
 test('should correctly fuzzy match station queries to the correct station', (t: any) => {
   t.plan(3);
-  const stationData = {
+  const {Stations: stationData} = {
     Stations: [
       {
         Code: 'A01',
@@ -256,7 +177,7 @@ test('should correctly fuzzy match station queries to the correct station', (t: 
 
 test('should correctly partial match to a station', (t: any) => {
   t.plan(3);
-  const stationData = {
+  const {Stations: stationData} = {
     Stations: [
       {
         Code: 'A01',
@@ -280,7 +201,7 @@ test('should correctly partial match to a station', (t: any) => {
   };
 
   t.deepEquals(
-    stationFuzzySearch('Convention', stationData),
+    stationPartialSearch('Convention', stationData),
     {
       Code: 'A01',
       Name: 'Mt Vernon Sq 7th St-Convention',
@@ -291,7 +212,7 @@ test('should correctly partial match to a station', (t: any) => {
   );
 
   t.deepEquals(
-    stationFuzzySearch('Center', stationData),
+    stationPartialSearch('Center', stationData),
     {
       Code: 'A01',
       Name: 'Metro Center',
@@ -302,7 +223,7 @@ test('should correctly partial match to a station', (t: any) => {
   );
 
   t.deepEquals(
-    stationFuzzySearch('GMU', stationData),
+    stationPartialSearch('GMU', stationData),
     {
       Code: 'A01',
       Name: 'GMU',
@@ -430,99 +351,6 @@ test('should get incidents that are relevant to the train lines in the station',
       },
     ],
     'Should get incidents affecting the Silver line.'
-  );
-});
-
-test('should get incidents that are relevant to the train lines in the station', (t: any) => {
-  t.plan(3);
-  const incidentData = {
-    BusIncidents: [
-      {
-        DateUpdated: '2014-10-28T08:13:03',
-        Description:
-          '90, 92, X1, X2, X9: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
-        IncidentID: '32297013-57B6-467F-BC6B-93DFA4115652',
-        IncidentType: 'Delay',
-        RoutesAffected: ['90', '92', 'X1', 'X2', 'X9'],
-      },
-      {
-        DateUpdated: '2014-10-28T08:13:03',
-        Description:
-          'PQ: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
-        IncidentID: '32297013-57B6-467F-BC6B-93DFA41156523',
-        IncidentType: 'Delay',
-        RoutesAffected: ['PQ'],
-      },
-      {
-        DateUpdated: '2014-10-28T08:13:03',
-        Description:
-          'JI: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
-        IncidentID: '2322970213-57B6-467F-BC6B-93DFA41156523',
-        IncidentType: 'Delay',
-        RoutesAffected: ['JI'],
-      },
-    ],
-  };
-
-  t.deepEquals(
-    getRelevantBusIncidents(['X2'], incidentData),
-    [
-      {
-        DateUpdated: '2014-10-28T08:13:03',
-        Description:
-          '90, 92, X1, X2, X9: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
-        IncidentID: '32297013-57B6-467F-BC6B-93DFA4115652',
-        IncidentType: 'Delay',
-        RoutesAffected: ['90', '92', 'X1', 'X2', 'X9'],
-      },
-    ],
-    'Should get incidents affecting X2 route.'
-  );
-
-  t.deepEquals(
-    getRelevantBusIncidents(['PQ', '92'], incidentData),
-    [
-      {
-        DateUpdated: '2014-10-28T08:13:03',
-        Description:
-          '90, 92, X1, X2, X9: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
-        IncidentID: '32297013-57B6-467F-BC6B-93DFA4115652',
-        IncidentType: 'Delay',
-        RoutesAffected: ['90', '92', 'X1', 'X2', 'X9'],
-      },
-      {
-        DateUpdated: '2014-10-28T08:13:03',
-        Description:
-          'PQ: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
-        IncidentID: '32297013-57B6-467F-BC6B-93DFA41156523',
-        IncidentType: 'Delay',
-        RoutesAffected: ['PQ'],
-      },
-    ],
-    'Should get incidents affecting PQ and 92 route.'
-  );
-
-  t.deepEquals(
-    getRelevantBusIncidents(['JI', 'PQ'], incidentData),
-    [
-      {
-        DateUpdated: '2014-10-28T08:13:03',
-        Description:
-          'PQ: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
-        IncidentID: '32297013-57B6-467F-BC6B-93DFA41156523',
-        IncidentType: 'Delay',
-        RoutesAffected: ['PQ'],
-      },
-      {
-        DateUpdated: '2014-10-28T08:13:03',
-        Description:
-          'JI: Due to traffic congestion at 8th & H St NE, buses are experiencing up to 20 minute delays in both directions.',
-        IncidentID: '2322970213-57B6-467F-BC6B-93DFA41156523',
-        IncidentType: 'Delay',
-        RoutesAffected: ['JI'],
-      },
-    ],
-    'Should get incidents affecting JI and PQ route.'
   );
 });
 
@@ -812,4 +640,58 @@ test('should correctly sort arrival predictions in ascending order', (t) => {
   );
 
   t.end();
+});
+
+test('should correctly append the applicable line codes for each platform', (t) => {
+  t.plan(2);
+
+  const lines = [];
+  const firstPlatform = {
+    Code: 'A01',
+    Name: 'Metro Center',
+    StationTogether1: 'C01',
+    StationTogether2: '',
+    LineCode1: 'RD',
+    LineCode2: null,
+    LineCode3: null,
+    LineCode4: null,
+    Lat: 38.898303,
+    Lon: -77.028099,
+    Address: {
+      Street: '607 13th St. NW',
+      City: 'Washington',
+      State: 'DC',
+      Zip: '20005',
+    },
+  };
+  const secondPlatform = {
+    Code: 'C01',
+    Name: 'Metro Center',
+    StationTogether1: 'A01',
+    StationTogether2: '',
+    LineCode1: 'BL',
+    LineCode2: 'OR',
+    LineCode3: 'SV',
+    LineCode4: null,
+    Lat: 38.898303,
+    Lon: -77.028099,
+    Address: {
+      Street: '607 13th St. NW',
+      City: 'Washington',
+      State: 'DC',
+      Zip: '20005',
+    },
+  };
+
+  t.deepEquals(
+    combineLineCodes(lines, firstPlatform),
+    ['RD'],
+    'Should contain all of the line codes from the first platform.'
+  );
+
+  t.deepEquals(
+    combineLineCodes(lines, secondPlatform),
+    ['RD', 'BL', 'OR', 'SV'],
+    'Should contain all of the line codes from the first and second platform.'
+  );
 });
