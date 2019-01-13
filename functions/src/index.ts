@@ -421,10 +421,24 @@ app.intent(
  * DiagFlow intent for cancel commands.
  */
 app.intent('default_welcome_intent', (conv) => {
+  const hours = parseInt(
+    new Date().toLocaleString('en-US', {
+      timeZone: 'America/New_York',
+      hour: 'numeric',
+      hour12: false,
+    })
+  );
+
   conv.ask(new Suggestions(['Train Commands', 'Bus Commands']));
 
   return conv.ask(
-    `Welcome to DC Metro! I'm able to tell you when the next train or bus is arriving at a station or stop in the Washington DC area. To find out how to use my commands please say 'Train Commands' or 'Bus Commands'.`
+    `Good ${
+      hours >= 12 && hours < 18
+        ? 'Afternoon'
+        : hours >= 18
+        ? 'Evening'
+        : 'Morning'
+    }, welcome to DC Metro! I'm able to tell you when the next train or bus is arriving at a station or stop in the Washington DC area. To find out how to use my commands please say 'Train Commands' or 'Bus Commands'.`
   );
 });
 
