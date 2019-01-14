@@ -139,7 +139,7 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
     );
     const predictionObj = await predictionResponse.json();
 
-    if (predictionObj) {
+    if (predictionObj.Predictions) {
       const incidentData = await fetchIncidents(serviceTypeEnum.BUS);
 
       /* Gets a list of all routes that are due to stop at this stop. */
