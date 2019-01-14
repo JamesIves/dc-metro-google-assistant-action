@@ -1,75 +1,4 @@
-/** Object which contains all incidents so it can be passed back and forth between intents. */
-export const serviceIncidentsObj = {
-  incidents: {
-    name: null,
-    type: null,
-    data: [],
-  },
-};
-
-/** Sets/Fetches service incidents for intent pass backs. */
-export const serviceIncidents = {
-  setIncidents: (incidents: {name: any, type: any, data: any[]}) =>
-    (serviceIncidentsObj.incidents = incidents),
-  getIncidents: () => serviceIncidentsObj.incidents,
-};
-
-/** Enum containing all of the service types the action supports. */
-export const serviceTypeEnum = {
-  TRAIN: 'train',
-  BUS: 'bus',
-};
-
-/** Enum containing all of the line names on the DC Metro. */
-export const lineNamesEnum = {
-  RD: 'Red',
-  BL: 'Blue',
-  YL: 'Yellow',
-  OR: 'Orange',
-  SV: 'Silver',
-  GR: 'Green',
-};
-
-/** Enum containing all service codes on the DC metro. */
-export const serviceCodesEnum = {
-  ARR: 'Arriving',
-  BRD: 'Boarding',
-  DLY: 'Delayed',
-};
-
-/** Enum containing all station acronyms and their matching string. */
-export const acronymEnum = {
-  MT: 'Mount',
-  AMER: 'American',
-  PL: 'Place',
-  UDC: 'University of the District of Columbia',
-  AU: 'American University',
-  AVE: 'Avenue',
-  CUA: 'Catholic University of America',
-  NOMA: 'North of Massachusetts Avenue',
-  GMU: 'George Mason University',
-  VT: 'Virginia Tech',
-  UVA: 'University of Virginia',
-  DCA: 'Ronald Reagan',
-  ST: 'Street',
-  SW: 'South West',
-  SQ: 'Square',
-  PENN: 'Pennsylvania',
-};
-
-/**
- * Accepts a code and a dictionary enum, and returns the match.
- * @param {string} code - The code that should be matched.
- * @param {object} dictionary - The enum that the code should be matched to.
- * @returns {string} Returns the matching string.
- */
-export function convertCode(code: string, dictionary: object): string {
-  if (dictionary[code]) {
-    return dictionary[code];
-  } else {
-    return code;
-  }
-}
+import {acronymEnum} from './constants';
 
 /**
  * Accepts a station name with acronyms and adjusts it to use the full version.
@@ -97,9 +26,9 @@ export function convertStationAcronym(stationName: string): string {
  * @returns {array} Returns an array containing the matched data if it exists.
  */
 export function stationFuzzySearch(query: string, stations: any): any {
-  const stationName = convertStationAcronym(query).toLowerCase();
+  const stationName = convertStationAcronym(query.toLowerCase()).toLowerCase();
   return (
-    stations.Stations.filter((item: {Name: string}) =>
+    stations.filter((item: {Name: string}) =>
       stationName.split(' ').every((word) =>
         convertStationAcronym(item.Name)
           .toLowerCase()
@@ -117,11 +46,42 @@ export function stationFuzzySearch(query: string, stations: any): any {
  */
 export function stationPartialSearch(query: string, stations: any): any {
   return (
-    stations.Stations.find(
+    stations.find(
       (item: {Name: {toLowerCase: () => {includes: (arg0: string) => void}}}) =>
-        item.Name.toLowerCase().includes(query)
+        item.Name.toLowerCase().includes(query.toLowerCase())
     ) || null
   );
+}
+
+/**
+ * Combines all applicable line codes that exist for a platform.
+ * @param {array} lines - The existing lines from other platforms.
+ * @param {object} platform - The stations platform data.
+ * @returns {array} Returns an array containing the concatenated line codes.
+ */
+export function combineLineCodes(
+  lines: any[],
+  platform: {LineCode1: any, LineCode2: any, LineCode3: any, LineCode4: any}
+): Array<string> {
+  const platformLines = [];
+
+  if (platform.LineCode1 !== null) {
+    lines.push(platform.LineCode1);
+  }
+
+  if (platform.LineCode2 !== null) {
+    lines.push(platform.LineCode2);
+  }
+
+  if (platform.LineCode3 !== null) {
+    lines.push(platform.LineCode3);
+  }
+
+  if (platform.LineCode4 !== null) {
+    lines.push(platform.LineCode4);
+  }
+
+  return lines.concat(platformLines);
 }
 
 /**
@@ -141,31 +101,6 @@ export function getRelevantTrainIncidents(
       );
       lines.map((line) => {
         if (linesAffected.includes(line)) {
-          incidentData.push(current);
-        }
-      });
-
-      return incidentData;
-    },
-    []
-  );
-}
-
-/**
- * Filters bus incident data and returns a set of incidents which are relevant to the bus stop.
- * @param {array} routes - An array of routes which arrive at this stop. For example ['ABC', 'EFG']
- * @param {array} incidents - An array containing all of the incident data.
- * @returns {array} Returns an array containing the matched incidents if they exist.
- */
-export function getRelevantBusIncidents(
-  routes: Array<string>,
-  incidents: any
-): any {
-  return incidents.BusIncidents.reduce(
-    (incidentData: any[], current: any): any => {
-      const routesAffected = current.RoutesAffected;
-      routes.map((route) => {
-        if (routesAffected.includes(route)) {
           incidentData.push(current);
         }
       });

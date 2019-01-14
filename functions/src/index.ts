@@ -7,12 +7,8 @@ import {
   Suggestions,
   LinkOutSuggestion,
 } from 'actions-on-google';
-import {
-  lineNamesEnum,
-  serviceCodesEnum,
-  convertCode,
-  serviceIncidents,
-} from './util';
+import {lineNamesEnum, serviceCodesEnum, convertCode} from './util/constants';
+import {serviceIncidents} from './util/incidents';
 import {fetchTrainTimetable, fetchBusTimetable} from './wmata';
 
 const app = dialogflow({debug: true});
@@ -438,7 +434,7 @@ app.intent(
     } else {
       conv.ask(new Suggestions(['Train Commands', 'Bus Commands']));
       conv.ask(
-        `I wasn't able to understand your request, please try saying either 'Train Commands' or 'Bus Commands' again.`
+        `To find out how to use my commands please say 'Train Commands' or 'Bus Commands'.`
       );
     }
   }
@@ -448,7 +444,7 @@ app.intent(
  * DiagFlow intent for cancel commands.
  */
 app.intent('default_welcome_intent', (conv) => {
-  conv.ask(new Suggestions(['Train Commands', 'Bus Commands']));
+  conv.ask(new Suggestions(['Train Commands', 'Bus Commands', 'Feedback']));
 
   return conv.ask(
     `Welcome to DC Metro! I'm able to tell you when the next train or bus is arriving at a station or stop in the Washington DC area. To find out how to use my commands please say 'Train Commands' or 'Bus Commands'.`
@@ -461,6 +457,23 @@ app.intent('default_welcome_intent', (conv) => {
 app.intent('goodbye_intent', (conv) => {
   return conv.close(
     `Have a good day! If you'd like to talk to me again in the future simply ask your Google Assistant to 'Talk to DC Metro'.`
+  );
+});
+
+/**
+ * DialogFlow intent for feedback commands.
+ */
+app.intent('feedback_intent', (conv) => {
+  conv.ask(
+    new LinkOutSuggestion({
+      name: 'Report Issues',
+      url:
+        'https://github.com/JamesIves/dc-metro-google-assistant-action/issues',
+    })
+  );
+
+  return conv.ask(
+    `Thank you for trying out the DC Metro Google Assistant action. If you'd like to report a bug or provide feedback you can do so at https://github.com/JamesIves/dc-metro-google-assistant-action. Is there anything else I can do for you?`
   );
 });
 
