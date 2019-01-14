@@ -1,14 +1,41 @@
 import * as functions from 'firebase-functions';
 import fetch from 'node-fetch';
 import {
+  combineLineCodes,
   stationFuzzySearch,
   stationPartialSearch,
-  getRelevantIncidents,
+  getRelevantTrainIncidents,
   sortPredictions,
-} from './util';
+} from './util/train';
+import {getRelevantBusIncidents} from './util/bus';
+import {serviceTypeEnum} from './util/constants';
 
 export const rootUrl = 'https://api.wmata.com';
 export const wmataApiKey = functions.config().metro.apikey;
+
+/**
+ * Fetches all incidents which are currently affecting the Metro.
+ * @param {string} transport - The mode of transport, either 'train' or 'bus'.
+ * @returns {Promise} Returns a promise.
+ */
+export const fetchIncidents = async (transport: string): Promise<object> => {
+  try {
+    const incidentResponse = await fetch(
+      `${rootUrl}/Incidents.svc/json/${
+        transport === 'train'
+          ? 'Incidents'
+          : transport === 'bus'
+          ? 'BusIncidents'
+          : ''
+      }?api_key=${wmataApiKey}`,
+      {method: 'GET'}
+    );
+
+    return await incidentResponse.json();
+  } catch (error) {
+    return [];
+  }
+};
 
 /**
  * Accepts a station name and returns a list of prediction results.
@@ -21,16 +48,15 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
       `${rootUrl}/Rail.svc/json/jStations?api_key=${wmataApiKey}`,
       {method: 'GET'}
     );
-    const stations = await stationResponse.json();
+    const {Stations: stations} = await stationResponse.json();
 
     /* The station code is required for the secondary API call. First we check to see if we can find
       an exact match on the station name with an array find. If not the net is set wider and a fuzzy match filter
       is performed. */
-    let stationName = station.toLowerCase();
-    let stationData = stationPartialSearch(stationName, stations);
+    let stationData = stationPartialSearch(station, stations);
 
     if (!stationData) {
-      stationData = stationFuzzySearch(stationName, stations);
+      stationData = stationFuzzySearch(station, stations);
     }
 
     if (stationData) {
@@ -41,15 +67,27 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         {method: 'GET'}
       );
 
-      let predictionObj = await predictionResponse.json();
+      const predictionObj = await predictionResponse.json();
+
+      /* Applicable line codes are stored in separate keys in the WMATA API. The following block
+        Checks all 4 and adds them to an array. This is later used to figure out if there's any
+        disruptions occurring at the station that is requested. */
+      let lines = combineLineCodes([], stationData);
 
       if (stationData.StationTogether1) {
         /* Some stations have multiple platforms, and the station code for these get stored in the
         StationTogether1 key. The following code fetches the prediction data for the multi platform station,
         adds it to the previous one, and then sorts it. */
+        const secondPlatform = stations.filter(
+          (platform: {Code: any}) =>
+            platform.Code === stationData.StationTogether1
+        )[0];
+
+        lines = combineLineCodes(lines, secondPlatform);
+
         const predictionResponseMulti = await fetch(
           `${rootUrl}/StationPrediction.svc/json/GetPrediction/${
-            stationData.StationTogether1
+            secondPlatform.Code
           }?api_key=${wmataApiKey}`,
           {method: 'GET'}
         );
@@ -70,29 +108,8 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
           (item.Destination !== 'ssenger' && item.Destination !== 'Train')
       );
 
-      /* Applicable line codes are stored in separate keys in the WMATA API. The following block
-        Checks all 4 and adds them to an array. This is later used to figure out if there's any
-        disruptions occurring at the station that is requested. */
-      const lines = [];
-
-      if (stationData.LineCode1 !== null) {
-        lines.push(stationData.LineCode1);
-      }
-
-      if (stationData.LineCode2 !== null) {
-        lines.push(stationData.lineCode2);
-      }
-
-      if (stationData.LineCode3 !== null) {
-        lines.push(stationData.LineCode3);
-      }
-
-      if (stationData.LineCode4 !== null) {
-        lines.push(stationData.LineCode4);
-      }
-
-      const incidentData = await fetchTrainIncidents();
-      const incidents = await getRelevantIncidents(lines, incidentData);
+      const incidentData = await fetchIncidents(serviceTypeEnum.TRAIN);
+      const incidents = await getRelevantTrainIncidents(lines, incidentData);
 
       return {
         stationName: stationData.Name,
@@ -120,24 +137,25 @@ export const fetchBusTimetable = async (stop: string): Promise<object> => {
       `${rootUrl}/NextBusService.svc/json/jPredictions?StopID=${sanitizedStopId}&api_key=${wmataApiKey}`,
       {method: 'GET'}
     );
-    return await predictionResponse.json();
-  } catch (error) {
-    return [];
-  }
-};
+    const predictionObj = await predictionResponse.json();
 
-/**
- * Fetches all incidents which are currently affecting the Metro.
- * @returns {Promise} Returns a promise.
- */
-export const fetchTrainIncidents = async (): Promise<object> => {
-  try {
-    const incidentResponse = await fetch(
-      `${rootUrl}/Incidents.svc/json/Incidents?api_key=${wmataApiKey}`,
-      {method: 'GET'}
-    );
+    if (predictionObj) {
+      const incidentData = await fetchIncidents(serviceTypeEnum.BUS);
 
-    return await incidentResponse.json();
+      /* Gets a list of all routes that are due to stop at this stop. */
+      const routes = predictionObj.Predictions.map(
+        (prediction: {RouteID: any}) => prediction.RouteID
+      );
+      const incidents = await getRelevantBusIncidents(routes, incidentData);
+
+      return {
+        stopName: predictionObj.StopName,
+        predictions: predictionObj.Predictions,
+        incidents,
+      };
+    } else {
+      return null;
+    }
   } catch (error) {
     return [];
   }
