@@ -5,6 +5,7 @@ import {
   Table,
   SimpleResponse,
   Suggestions,
+  Permission,
   LinkOutSuggestion,
 } from 'actions-on-google';
 import {lineNamesEnum, serviceCodesEnum, convertCode} from './util/constants';
@@ -490,5 +491,25 @@ app.intent('feedback_intent', (conv) => {
     `Thank you for trying out the DC Metro Google Assistant action. If you'd like to report a bug or provide feedback you can do so at https://github.com/JamesIves/dc-metro-google-assistant-action. Is there anything else I can do for you?`
   );
 });
+
+app.intent('bus_stop_nearby_permission', (conv) => {
+  conv.ask(new Permission({
+    context: 'To get nearby bus stops',
+    permissions: 'DEVICE_PRECISE_LOCATION',
+  }));
+});
+
+app.intent('bus_stop_nearby', (conv, input, granted) => {
+  if (granted) {
+    conv.close(`Location was granted ${JSON.stringify(conv)}`);
+  } else {
+    // was not granted permission to get name
+    // so instead, provide a generic hello
+    conv.close(`Location was not granted!`);
+  }
+});
+
+
+
 
 exports.dcMetro = functions.https.onRequest(app);
