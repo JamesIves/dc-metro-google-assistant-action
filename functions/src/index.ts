@@ -499,12 +499,10 @@ app.intent('bus_stop_nearby_permission', (conv) => {
   }));
 });
 
-app.intent('bus_stop_nearby', (conv, input, granted) => {
+app.intent('bus_stop_nearby', (conv: any, input, granted) => {
   if (granted) {
-    conv.close(`Location was granted ${JSON.stringify(conv)}`);
+    conv.ask(`The lat is ${conv.device.location.coordinates.latitude} and the long is ${conv.device.location.coordinates.longitude}`)
   } else {
-    // was not granted permission to get name
-    // so instead, provide a generic hello
     conv.close(`Location was not granted!`);
   }
 });
