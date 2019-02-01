@@ -13,10 +13,10 @@ import {serviceTypeEnum} from './util/constants';
 export const rootUrl = 'https://api.wmata.com';
 export const wmataApiKey = functions.config().metro.apikey;
 
-export const fetchNearbyStops = async (lat: string, lon: string): Promise<Object> => {
+export const fetchNearbyStops = async (lat: string, lon: string): Promise<[]> => {
   try {
     const stopResponse = await fetch(
-      `${rootUrl}jStops?Lat=${lat}78&Lon=-${lon}&Radius=200&api_key=${wmataApiKey}`,
+      `${rootUrl}/Bus.svc/json/jStops?Lat=${lat}&Lon=${lon}&Radius=250&api_key=${wmataApiKey}`,
       {method: 'GET'}
     );
     const stopObj = await stopResponse.json();

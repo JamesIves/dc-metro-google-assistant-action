@@ -10,7 +10,7 @@ import {
 } from 'actions-on-google';
 import {lineNamesEnum, serviceCodesEnum, convertCode} from './util/constants';
 import {serviceIncidents} from './util/incidents';
-import {fetchTrainTimetable, fetchBusTimetable} from './wmata';
+import {fetchTrainTimetable, fetchBusTimetable, fetchNearbyStops} from './wmata';
 
 const app = dialogflow({debug: true});
 
@@ -492,6 +492,9 @@ app.intent('feedback_intent', (conv) => {
   );
 });
 
+/**
+ * DialogFlow intent to ask for location permissions for nearby bus stops.
+ */
 app.intent('bus_stop_nearby_permission', (conv) => {
   conv.ask(new Permission({
     context: 'To get nearby bus stops',
@@ -499,9 +502,21 @@ app.intent('bus_stop_nearby_permission', (conv) => {
   }));
 });
 
-app.intent('bus_stop_nearby', (conv: any, input, granted) => {
+/**
+ * DialogFlow intent for asking the user which bus stop to choose.
+ */
+app.intent('bus_stop_nearby', async (conv: any, input, granted) => {
   if (granted) {
-    conv.ask(`The lat is ${conv.device.location.coordinates.latitude} and the long is ${conv.device.location.coordinates.longitude}`)
+    const stops = await fetchNearbyStops(conv.device.location.coordinates.latitude, conv.device.location.coordinates.longitude);
+    
+    if (stops.length) {
+      conv.ask(`Here are the bus stops I found nearby, which one would you like to hear about?`)
+      // TODO: Write a follow up command here that will let users select a bus stop
+      // ie (the third one, or the second one), and also use an interface if they have it...
+    } else {
+      // TODO: Write a better follow up question here...
+      conv.ask(`I couldn't find any bus stops within 250ft of your current location.`)
+    }
   } else {
     conv.close(`Location was not granted!`);
   }
