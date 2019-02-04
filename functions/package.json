@@ -19,7 +19,7 @@
   "dependencies": {
     "@types/node-fetch": "^2.1.5",
     "actions-on-google": "^2.5.0",
-    "firebase-admin": "^6.5.1",
+    "firebase-admin": "^7.0.0",
     "firebase-functions": "^2.1.0",
     "node-fetch": "^2.3.0",
     "tape": "^4.9.2"
