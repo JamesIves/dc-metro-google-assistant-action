@@ -7,10 +7,15 @@ import {
   Suggestions,
   Permission,
   LinkOutSuggestion,
+  List,
 } from 'actions-on-google';
 import {lineNamesEnum, serviceCodesEnum, convertCode} from './util/constants';
 import {serviceIncidents} from './util/incidents';
-import {fetchTrainTimetable, fetchBusTimetable, fetchNearbyStops} from './wmata';
+import {
+  fetchTrainTimetable,
+  fetchBusTimetable,
+  fetchNearbyStops,
+} from './wmata';
 
 const app = dialogflow({debug: true});
 
@@ -496,10 +501,12 @@ app.intent('feedback_intent', (conv) => {
  * DialogFlow intent to ask for location permissions for nearby bus stops.
  */
 app.intent('bus_stop_nearby_permission', (conv) => {
-  conv.ask(new Permission({
-    context: 'To get nearby bus stops',
-    permissions: 'DEVICE_PRECISE_LOCATION',
-  }));
+  conv.ask(
+    new Permission({
+      context: 'To get nearby bus stops',
+      permissions: 'DEVICE_PRECISE_LOCATION',
+    })
+  );
 });
 
 /**
@@ -507,22 +514,45 @@ app.intent('bus_stop_nearby_permission', (conv) => {
  */
 app.intent('bus_stop_nearby', async (conv: any, input, granted) => {
   if (granted) {
-    const stops = await fetchNearbyStops(conv.device.location.coordinates.latitude, conv.device.location.coordinates.longitude);
-    
+    const stops = await fetchNearbyStops(
+      conv.device.location.coordinates.latitude,
+      conv.device.location.coordinates.longitude
+    );
+
     if (stops.length) {
-      conv.ask(`Here are the bus stops I found nearby, which one would you like to hear about?`)
+      conv.ask(
+        `Here are the bus stops I found nearby, which one would you like to hear about?`
+      );
       // TODO: Write a follow up command here that will let users select a bus stop
       // ie (the third one, or the second one), and also use an interface if they have it...
+
+      const stopCells = await stops.reduce((obj, item: any) => { 
+        obj[item.StopID] = {}
+        obj[item.StopID].synonyms = item.Routes
+        obj[item.StopID].title = item.Name
+        obj[item.StopID].description = 'ddd'
+        obj[item.StopID].image = new Image({
+          url: 'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon_large.png',
+          alt: item.StopID,
+        })
+        return obj
+      }, {})
+
+      conv.ask(
+        new List({
+          title: 'Nearby Bus Stops',
+          items: stopCells,
+        })
+      );
     } else {
       // TODO: Write a better follow up question here...
-      conv.ask(`I couldn't find any bus stops within 250ft of your current location.`)
+      conv.ask(
+        `I couldn't find any bus stops within 250ft of your current location.`
+      );
     }
   } else {
     conv.close(`Location was not granted!`);
   }
 });
-
-
-
 
 exports.dcMetro = functions.https.onRequest(app);

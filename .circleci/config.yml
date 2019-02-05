@@ -9,7 +9,6 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "./functions/package.json" }}
             - v1-dependencies-
- 
       - run:
           name: Installing Dependencies
           working_directory: ~/project/functions
