@@ -123,8 +123,8 @@ test('should generate an object with all of the correct keys for the nearby bus 
     createNearbyStopList(stops),
     {
       1000533: {
-        synonyms: 'Bus stop 1000533',
-        title: 'Bus stop 1000533: K ST + POTOMAC AVE',
+        synonyms: 'Stop 1000533',
+        title: 'Stop 1000533: K ST + POTOMAC AVE',
         description: 'Routes: V7, V7c, V7cv1, V7v1, V7v2, V8, V9',
         image: {
           url:
@@ -135,8 +135,8 @@ test('should generate an object with all of the correct keys for the nearby bus 
         },
       },
       1000544: {
-        synonyms: 'Bus stop 1000544',
-        title: 'Bus stop 1000544: POTOMAC AVE + 13TH ST',
+        synonyms: 'Stop 1000544',
+        title: 'Stop 1000544: POTOMAC AVE + 13TH ST',
         description: 'Routes: V7, V7c, V7cv1, V7v1, V7v2, V8, V9',
         image: {
           url:
@@ -147,8 +147,8 @@ test('should generate an object with all of the correct keys for the nearby bus 
         },
       },
       1000550: {
-        synonyms: 'Bus stop 1000550',
-        title: 'Bus stop 1000550: I ST + 11TH ST',
+        synonyms: 'Stop 1000550',
+        title: 'Stop 1000550: I ST + 11TH ST',
         description: 'Routes: V7, V7c, V7cv1, V7cv2, V8, V9',
         image: {
           url:
@@ -159,7 +159,7 @@ test('should generate an object with all of the correct keys for the nearby bus 
         },
       },
     },
-    'Should generate a stop list.'
+    'Should generate a object used for the stop list.'
   );
 
   t.end();
