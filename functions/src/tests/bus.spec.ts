@@ -1,5 +1,5 @@
 import * as test from 'tape';
-import {getRelevantBusIncidents} from '../util/bus';
+import {getRelevantBusIncidents, createNearbyStopList} from '../util/bus';
 
 test('should get incidents that are relevant to the train lines in the station', (t: any) => {
   t.plan(3);
@@ -92,4 +92,30 @@ test('should get incidents that are relevant to the train lines in the station',
     ],
     'Should get incidents affecting JI and PQ route.'
   );
+});
+
+test('should generate an object with all of the correct keys for the nearby bus stop intent', (t) => {
+  const stops = [
+    {
+      Lat: 38.878356,
+      Lon: -76.990378,
+      Name: 'K ST + POTOMAC AVE',
+      Routes: ['V7', 'V7c', 'V7cv1', 'V7v1', 'V7v2', 'V8', 'V9'],
+      StopID: '1000533',
+    },
+    {
+      Lat: 38.879041,
+      Lon: -76.988528,
+      Name: 'POTOMAC AVE + 13TH ST',
+      Routes: ['V7', 'V7c', 'V7cv1', 'V7v1', 'V7v2', 'V8', 'V9'],
+      StopID: '1000544',
+    },
+    {
+      Lat: 38.879347,
+      Lon: -76.991248,
+      Name: 'I ST + 11TH ST',
+      Routes: ['V7', 'V7c', 'V7cv1', 'V7cv2', 'V8', 'V9'],
+      StopID: '1000550',
+    },
+  ];
 });

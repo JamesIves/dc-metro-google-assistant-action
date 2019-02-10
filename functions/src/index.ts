@@ -16,6 +16,7 @@ import {
   fetchBusTimetable,
   fetchNearbyStops,
 } from './wmata';
+import {createNearbyStopList} from './util/bus';
 
 const app = dialogflow({debug: true});
 
@@ -26,9 +27,16 @@ app.intent(
   'metro_timetable',
   async (
     conv: any,
-    {transport, station}: {transport: string, station: string}
+    {transport, station}: {transport: string, station: string},
+    option: string
   ) => {
-    const transportParam = transport.toLowerCase();
+    let transportParam = transport.toLowerCase();
+    let stationParam = station.toLowerCase();
+
+    if (conv.contexts.get('bus_nearby_selection')) {
+      transportParam = 'bus';
+      stationParam = option;
+    }
 
     if (
       transportParam === 'train' ||
@@ -36,7 +44,7 @@ app.intent(
       transportParam === 'metro'
     ) {
       // Handles train times.
-      const timetable: any = await fetchTrainTimetable(station);
+      const timetable: any = await fetchTrainTimetable(stationParam);
 
       if (!timetable) {
         conv.ask(
@@ -200,7 +208,7 @@ app.intent(
       }
     } else if (transportParam === 'bus') {
       // Handles bus times.
-      const timetable: any = await fetchBusTimetable(station);
+      const timetable: any = await fetchBusTimetable(stationParam);
 
       if (!timetable) {
         conv.ask(
@@ -433,9 +441,9 @@ app.intent(
         `To get the next train arrival at a Metro station you can say things such as 'Train times for Farragut North' or 'Rail times for Smithsonian'. What would you like me to do?`
       );
     } else if (transportParam === 'bus') {
-      conv.ask(new Suggestions(['Train Commands']));
+      conv.ask(new Suggestions(['Bus stops near me', 'Train Commands']));
       conv.ask(
-        `To find out when the next bus arrives you can say 'Bus times for 123', replacing the 123 with the stop id found on the Metro bus stop sign. What would you like me to do?`
+        `To find out when the next bus arrives you can say 'Bus times for 123', replacing the 123 with the stop id found on the Metro bus stop sign. You can also ask me to fetch bus stops near you. What would you like me to do?`
       );
     } else {
       conv.ask(new Suggestions(['Train Commands', 'Bus Commands']));
@@ -501,12 +509,18 @@ app.intent('feedback_intent', (conv) => {
  * DialogFlow intent to ask for location permissions for nearby bus stops.
  */
 app.intent('bus_stop_nearby_permission', (conv) => {
-  conv.ask(
-    new Permission({
-      context: 'To get nearby bus stops',
-      permissions: 'DEVICE_PRECISE_LOCATION',
-    })
-  );
+  if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
+    conv.ask(
+      new Permission({
+        context: 'To get nearby bus stops',
+        permissions: 'DEVICE_PRECISE_LOCATION',
+      })
+    );
+  } else {
+    conv.ask(
+      'This action requires a device with a screen, is there anything else I can do for you?'
+    );
+  }
 });
 
 /**
@@ -521,22 +535,12 @@ app.intent('bus_stop_nearby', async (conv: any, input, granted) => {
 
     if (stops.length) {
       conv.ask(
-        `Here are the bus stops I found nearby, which one would you like to hear about?`
+        `Here are the bus stops I found nearby, select the one which you'd like to hear about, or say 'Bus stop' followed by the number.`
       );
-      // TODO: Write a follow up command here that will let users select a bus stop
-      // ie (the third one, or the second one), and also use an interface if they have it...
 
-      const stopCells = await stops.reduce((obj, item: any) => { 
-        obj[item.StopID] = {}
-        obj[item.StopID].synonyms = item.Routes
-        obj[item.StopID].title = item.Name
-        obj[item.StopID].description = 'ddd'
-        obj[item.StopID].image = new Image({
-          url: 'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon_large.png',
-          alt: item.StopID,
-        })
-        return obj
-      }, {})
+      conv.contexts.set('bus_nearby_selection', 1);
+
+      const stopCells = await createNearbyStopList(stops);
 
       conv.ask(
         new List({
@@ -545,13 +549,14 @@ app.intent('bus_stop_nearby', async (conv: any, input, granted) => {
         })
       );
     } else {
-      // TODO: Write a better follow up question here...
       conv.ask(
-        `I couldn't find any bus stops within 250ft of your current location.`
+        `I couldn't find any bus stops near your current location. Is there anything else I can do for you?`
       );
     }
   } else {
-    conv.close(`Location was not granted!`);
+    conv.ask(
+      `Unfortunately I require access to your location to show you nearby bus stops. Is there anything else I can do for you?`
+    );
   }
 });
 
