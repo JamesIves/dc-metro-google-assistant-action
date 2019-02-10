@@ -441,7 +441,7 @@ app.intent(
         `To get the next train arrival at a Metro station you can say things such as 'Train times for Farragut North' or 'Rail times for Smithsonian'. What would you like me to do?`
       );
     } else if (transportParam === 'bus') {
-      conv.ask(new Suggestions(['Bus stops near me', 'Train Commands']));
+      conv.ask(new Suggestions(['Bus Stops Near Me', 'Train Commands']));
       conv.ask(
         `To find out when the next bus arrives you can say 'Bus times for 123', replacing the 123 with the stop id found on the Metro bus stop sign. You can also ask me to fetch bus stops near you. What would you like me to do?`
       );
