@@ -118,4 +118,49 @@ test('should generate an object with all of the correct keys for the nearby bus 
       StopID: '1000550',
     },
   ];
+
+  t.deepEqual(
+    createNearbyStopList(stops),
+    {
+      1000533: {
+        synonyms: 'Bus stop 1000533',
+        title: 'Bus stop 1000533: K ST + POTOMAC AVE',
+        description: 'Routes: V7, V7c, V7cv1, V7v1, V7v2, V8, V9',
+        image: {
+          url:
+            'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon.png',
+          accessibilityText: '1000533',
+          height: undefined,
+          width: undefined,
+        },
+      },
+      1000544: {
+        synonyms: 'Bus stop 1000544',
+        title: 'Bus stop 1000544: POTOMAC AVE + 13TH ST',
+        description: 'Routes: V7, V7c, V7cv1, V7v1, V7v2, V8, V9',
+        image: {
+          url:
+            'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon.png',
+          accessibilityText: '1000544',
+          height: undefined,
+          width: undefined,
+        },
+      },
+      1000550: {
+        synonyms: 'Bus stop 1000550',
+        title: 'Bus stop 1000550: I ST + 11TH ST',
+        description: 'Routes: V7, V7c, V7cv1, V7cv2, V8, V9',
+        image: {
+          url:
+            'https://raw.githubusercontent.com/JamesIves/dc-metro-google-assistant-action/master/assets/app_icon.png',
+          accessibilityText: '1000550',
+          height: undefined,
+          width: undefined,
+        },
+      },
+    },
+    'Should generate a stop list.'
+  );
+
+  t.end();
 });
