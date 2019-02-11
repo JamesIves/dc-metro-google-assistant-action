@@ -17,7 +17,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@types/node-fetch": "^2.1.5",
+    "@types/node-fetch": "^2.1.6",
     "actions-on-google": "^2.5.0",
     "firebase-admin": "^7.0.0",
     "firebase-functions": "^2.2.0",
