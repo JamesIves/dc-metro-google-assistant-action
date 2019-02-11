@@ -22,7 +22,7 @@
     "firebase-admin": "^7.0.0",
     "firebase-functions": "^2.2.0",
     "node-fetch": "^2.3.0",
-    "tape": "^4.9.2"
+    "tape": "^4.10.0"
   },
   "devDependencies": {
     "@types/tape": "^4.2.33",
