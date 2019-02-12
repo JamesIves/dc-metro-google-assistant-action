@@ -13,6 +13,23 @@ import {serviceTypeEnum} from './util/constants';
 export const rootUrl = 'https://api.wmata.com';
 export const wmataApiKey = functions.config().metro.apikey;
 
+export const fetchNearbyStops = async (
+  lat: string,
+  lon: string
+): Promise<[]> => {
+  try {
+    const stopResponse = await fetch(
+      `${rootUrl}/Bus.svc/json/jStops?Lat=${lat}&Lon=${lon}&Radius=250&api_key=${wmataApiKey}`,
+      {method: 'GET'}
+    );
+    const stopObj = await stopResponse.json();
+
+    return stopObj.Stops;
+  } catch (error) {
+    return [];
+  }
+};
+
 /**
  * Fetches all incidents which are currently affecting the Metro.
  * @param {string} transport - The mode of transport, either 'train' or 'bus'.
