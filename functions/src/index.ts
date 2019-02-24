@@ -455,6 +455,17 @@ app.intent(
 );
 
 /**
+ * DiagFlow intent for the different help command.
+ */
+app.intent('help_intent', async (conv: any) => {
+  conv.ask(new Suggestions(['Train Commands', 'Bus Commands', 'Feedback']));
+
+  return conv.ask(
+    `I'm able to tell you when the next train or bus is arriving at a station or stop in the Washington DC area. To find out how to use my commands please say 'Train Commands' or 'Bus Commands.`
+  );
+});
+
+/**
  * DiagFlow intent for cancel commands.
  */
 app.intent('default_welcome_intent', (conv) => {
@@ -475,7 +486,11 @@ app.intent('default_welcome_intent', (conv) => {
         : hours >= 18
         ? 'Evening'
         : 'Morning'
-    }, welcome to DC Metro! I'm able to tell you when the next train or bus is arriving at a station or stop in the Washington DC area. To find out how to use my commands please say 'Train Commands' or 'Bus Commands'.`
+    }, ${
+      conv.user.last.seen
+        ? 'welcome back to DC Metro! If you need help at all just ask.'
+        : `welcome to DC Metro! I'm able to tell you when the next train or bus is arriving at a station or stop in the Washington DC area. To find out how to use my commands please say 'Train Commands' or 'Bus Commands.`
+    }`
   );
 });
 
