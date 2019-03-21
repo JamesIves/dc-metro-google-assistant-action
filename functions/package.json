@@ -20,7 +20,7 @@
     "@types/node-fetch": "^2.1.6",
     "actions-on-google": "^2.6.0",
     "firebase-admin": "^7.0.0",
-    "firebase-functions": "^2.2.0",
+    "firebase-functions": "^2.2.1",
     "node-fetch": "^2.3.0",
     "tape": "^4.10.1"
   },
