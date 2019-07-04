@@ -33,8 +33,8 @@ export function getRelevantBusIncidents(
 export function createNearbyStopList(stops: Array<object>): any {
   return stops.reduce((obj, item: any) => {
     obj[item.StopID] = {};
-    (obj[item.StopID].synonyms = `Stop ${item.StopID}`),
-      (obj[item.StopID].title = `Stop ${item.StopID}: ${item.Name}`);
+    obj[item.StopID].synonyms = `Stop ${item.StopID}`;
+    obj[item.StopID].title = `Stop ${item.StopID}: ${item.Name}`;
     obj[item.StopID].description = `Routes: ${item.Routes.join(', ')}`;
     obj[item.StopID].image = new Image({
       url:
