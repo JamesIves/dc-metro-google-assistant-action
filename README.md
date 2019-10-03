@@ -3,12 +3,12 @@
 [![View Application](https://img.shields.io/badge/view-application-blue.svg)](https://assistant.google.com/services/a/uid/000000c72972063a?hl=en-US
 ) [![CircleCI](https://img.shields.io/circleci/project/github/JamesIves/reddit-viewer/master.svg)](https://circleci.com/gh/JamesIves/dc-metro-google-assistant-action/tree/master) [![Issues](https://img.shields.io/github/issues/JamesIves/dc-metro-google-assistant-action.svg)](https://github.com/JamesIves/dc-metro-google-assistant-action/issues)
 
-This is a custom action for [Google Assistant](https://assistant.google.com/) which will tell you the current rail and bus predictions/incidents for the [DC Metro transit system](https://www.wmata.com/). These actions can be invoked on anything that supports Google Assistant such as a phone, a Google Home device, and the from the app. This action leverages the Metro API's. It's _not_ an official product provided by WMATA.
+This is a custom action for [Google Assistant](https://assistant.google.com/) which will tell you the current rail- and bus-predictions/incidents for the [DC Metro transit system](https://www.wmata.com/). These actions can be invoked on anything that supports Google Assistant such as a phone, a Google Home device, and the from the app. This action leverages the Metro API's. It's _not_ an official product provided by WMATA.
 
 **You can view this application on the Google Assistant interaction directory [here](https://assistant.google.com/services/a/uid/000000c72972063a?hl=en-US)**. 📡
 
 ## Installation Steps 💽
-This application can be installed with Yarn by running `yarn install`. With the dependencies installed you can compile, lint and format the code base using the the following commands.
+This application can be installed with Yarn by running `yarn install`. With the dependencies installed you can compile, lint, and format the code base using the following commands:
 
 | Command | Description |
 | ------------- | ------------- |
@@ -24,7 +24,7 @@ This action uses [Firebase functions](https://firebase.google.com/docs/functions
 
 
 ## Interactions 💬
-You're able to invoke the action using Google Assistant by saying `Hey Google, talk to DC Metro`, or by using one of the following commands.
+You're able to invoke the action using Google Assistant by saying `Hey Google, talk to DC Metro`, or by using one of the following commands:
 
 | Action | Description |
 | ------------- | ------------- |
