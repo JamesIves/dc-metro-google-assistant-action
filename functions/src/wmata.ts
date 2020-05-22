@@ -78,9 +78,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
 
     if (stationData) {
       const predictionResponse = await fetch(
-        `${rootUrl}/StationPrediction.svc/json/GetPrediction/${
-          stationData.Code
-        }?api_key=${wmataApiKey}`,
+        `${rootUrl}/StationPrediction.svc/json/GetPrediction/${stationData.Code}?api_key=${wmataApiKey}`,
         {method: 'GET'}
       );
 
@@ -103,9 +101,7 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         lines = combineLineCodes(lines, secondPlatform);
 
         const predictionResponseMulti = await fetch(
-          `${rootUrl}/StationPrediction.svc/json/GetPrediction/${
-            secondPlatform.Code
-          }?api_key=${wmataApiKey}`,
+          `${rootUrl}/StationPrediction.svc/json/GetPrediction/${secondPlatform.Code}?api_key=${wmataApiKey}`,
           {method: 'GET'}
         );
 
@@ -122,7 +118,8 @@ export const fetchTrainTimetable = async (station: string): Promise<object> => {
         (item: {Line: string, Destination: string}) =>
           item.Line !== 'None' &&
           item.Line !== 'No' &&
-          (item.Destination !== 'ssenger' && item.Destination !== 'Train')
+          item.Destination !== 'ssenger' &&
+          item.Destination !== 'Train'
       );
 
       const incidentData = await fetchIncidents(serviceTypeEnum.TRAIN);

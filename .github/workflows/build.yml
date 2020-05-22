@@ -1,0 +1,32 @@
+name: unit-tests
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '*.*'
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.15.1'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install and Test
+        run: |
+          yarn install
+          yarn lint

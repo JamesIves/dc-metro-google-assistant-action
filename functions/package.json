@@ -17,19 +17,20 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@types/node-fetch": "^2.5.4",
     "actions-on-google": "^2.12.0",
-    "firebase-admin": "^7.4.0",
-    "firebase-functions": "^2.3.1",
     "node-fetch": "^2.6.0",
+    "firebase-functions": "^3.6.1",
     "tape": "^4.13.2"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.4",
     "@types/tape": "^4.2.34",
-    "prettier": "*",
-    "ts-node": "8.6.2",
+    "@types/node": "^14.0.5",
+    "prettier": "^2.0.5",
+    "ts-node": "^8.10.1",
     "tslint": "~6.0.0",
-    "typescript": "~3.8.3"
+    "typescript": "^3.9.2",
+    "firebase-admin": "^8.12.1"
   },
   "private": true,
   "repository": {
@@ -51,5 +52,6 @@
   "bugs": {
     "url": "https://github.com/JamesIves/dc-metro-google-assistant-action/issues"
   },
-  "homepage": "https://github.com/JamesIves/dc-metro-google-assistant-action"
+  "homepage": "https://github.com/JamesIves/dc-metro-google-assistant-action",
+  "engines": {"node": "10"}
 }

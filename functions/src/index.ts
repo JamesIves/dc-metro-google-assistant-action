@@ -96,9 +96,7 @@ app.intent(
                         ? `It's arriving now.`
                         : timetable.predictions[1].Min === 'BRD'
                         ? `It's boarding now.`
-                        : `It arrives in ${
-                            timetable.predictions[1].Min
-                          } minutes.`
+                        : `It arrives in ${timetable.predictions[1].Min} minutes.`
                     }`
                   : ''
               }`,
@@ -125,9 +123,7 @@ app.intent(
                               ? `It's arriving now. `
                               : timetable.predictions[1].Min === 'BRD'
                               ? `It's boarding now. `
-                              : `It arrives in ${
-                                  timetable.predictions[1].Min
-                                } minutes. `
+                              : `It arrives in ${timetable.predictions[1].Min} minutes. `
                           }`
                         : ''
                     }`
@@ -195,9 +191,7 @@ app.intent(
             return conv.ask(
               timetable.incidents.length === 1
                 ? `There is an incident affecting the lines which service this station. Would you like to know about it?`
-                : `There are ${
-                    timetable.incidents.length
-                  } incidents affecting the lines which service this station. Would you like to know about them?`
+                : `There are ${timetable.incidents.length} incidents affecting the lines which service this station. Would you like to know about them?`
             );
           } else {
             return conv.ask(
@@ -236,18 +230,8 @@ app.intent(
         } else {
           conv.ask(
             new SimpleResponse({
-              speech: `The next bus arriving at this stop is bound for ${
-                timetable.predictions[0].DirectionText
-              } and is due to arrive in ${
-                timetable.predictions[0].Minutes
-              } minutes. `,
-              text: `The next bus arriving at stop ${
-                timetable.stopName
-              } is bound for ${
-                timetable.predictions[0].DirectionText
-              } and is due to arrive in ${
-                timetable.predictions[0].Minutes
-              } minutes. `,
+              speech: `The next bus arriving at this stop is bound for ${timetable.predictions[0].DirectionText} and is due to arrive in ${timetable.predictions[0].Minutes} minutes. `,
+              text: `The next bus arriving at stop ${timetable.stopName} is bound for ${timetable.predictions[0].DirectionText} and is due to arrive in ${timetable.predictions[0].Minutes} minutes. `,
             })
           );
 
@@ -302,16 +286,8 @@ app.intent(
           ) {
             conv.ask(
               new SimpleResponse({
-                speech: `The bus after that is bound for ${
-                  timetable.predictions[1].DirectionText
-                } and is due to arrive in ${
-                  timetable.predictions[1].Minutes
-                } minutes. `,
-                text: `The bus after that is bound for ${
-                  timetable.predictions[1].DirectionText
-                } and is due to arrive in ${
-                  timetable.predictions[1].Minutes
-                } minutes. `,
+                speech: `The bus after that is bound for ${timetable.predictions[1].DirectionText} and is due to arrive in ${timetable.predictions[1].Minutes} minutes. `,
+                text: `The bus after that is bound for ${timetable.predictions[1].DirectionText} and is due to arrive in ${timetable.predictions[1].Minutes} minutes. `,
               })
             );
           }
@@ -327,9 +303,7 @@ app.intent(
             return conv.ask(
               timetable.incidents.length === 1
                 ? `There is an incident affecting a route which services this stop. Would you like to know about it?`
-                : `There are ${
-                    timetable.incidents.length
-                  } incidents affecting the routes which service this stop. Would you like to know about them?`
+                : `There are ${timetable.incidents.length} incidents affecting the routes which service this stop. Would you like to know about them?`
             );
           } else {
             return conv.ask(
@@ -388,9 +362,7 @@ app.intent('incident_intent', async (conv: any) => {
         .map((incident) => incident.Description)
         .join('\n');
       conv.ask(
-        `Here are the incidents affecting this ${
-          incidents.type
-        }: ${incidentTts}`
+        `Here are the incidents affecting this ${incidents.type}: ${incidentTts}`
       );
     }
 

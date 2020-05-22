@@ -29,11 +29,11 @@ export function stationFuzzySearch(query: string, stations: any): any {
   const stationName = convertStationAcronym(query.toLowerCase()).toLowerCase();
   return (
     stations.filter((item: {Name: string}) =>
-      stationName.split(' ').every((word) =>
-        convertStationAcronym(item.Name)
-          .toLowerCase()
-          .includes(word)
-      )
+      stationName
+        .split(' ')
+        .every((word) =>
+          convertStationAcronym(item.Name).toLowerCase().includes(word)
+        )
     )[0] || null
   );
 }
