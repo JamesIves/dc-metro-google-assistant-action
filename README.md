@@ -2,7 +2,7 @@
 
 This is a custom action for [Google Assistant](https://assistant.google.com/) which will tell you the current rail- and bus-predictions/incidents for the [DC Metro transit system](https://www.wmata.com/). These actions can be invoked on anything that supports Google Assistant such as a phone, a Google Home device, and the from the app. This action leverages the Metro API's. It's _not_ an official product provided by WMATA.
 
-**You can view this application on the Google Assistant interaction directory [here](https://assistant.google.com/services/a/uid/000000c72972063a?hl=en-US) . [You can also check out the article I wrote on this here!](https://jamesiv.es/blog/dialogflow/2018/12/05/dc-metro-google-assistant-action) 📡
+**You can view this application on the Google Assistant interaction directory [here](https://assistant.google.com/services/a/uid/000000c72972063a?hl=en-US) . [You can also check out the article I wrote on this here!](https://jamesiv.es/blog/dialogflow/2018/12/05/dc-metro-google-assistant-action)** 📡
 
 ## Installation Steps 💽
 This application can be installed with Yarn by running `yarn install`. With the dependencies installed you can compile, lint, and format the code base using the following commands:
